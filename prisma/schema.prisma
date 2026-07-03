@@ -1,0 +1,264 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 역할(role): STUDENT, PARENT, COACH, DIRECTOR, TEACHER
+// 종목(sport): 자유 문자열 (축구, 농구, 야구 ...)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  nickname  String?  // 커뮤니티 표시 이름(닉네임)
+  role      String   @default("STUDENT")
+  sport     String?  // 주 종목
+  region    String?  // 활동/거주 지역
+  bio       String?  // 한 줄 소개
+  avatar    String?  // 프로필 이미지 URL
+  cover     String?  // 커버 이미지 URL
+  verified  Boolean  @default(false) // 인증 지도자 뱃지
+  isAdmin   Boolean  @default(false) // 관리자 계정
+  suspended Boolean  @default(false) // 신고 처리에 따른 이용 정지
+  points    Int      @default(0) // 커뮤니티 활동 포인트(추천 등)
+  agreedAt      DateTime? // 이용약관·개인정보 필수 동의 시각(동의 이력)
+  marketingOptIn Boolean  @default(false) // 마케팅 정보 수신(선택) 동의
+  createdAt DateTime @default(now())
+
+  careers              Career[]
+  verificationRequests VerificationRequest[]
+  credentials          Credential[]
+  postLikes            PostLike[]
+  commentLikes         CommentLike[]
+  reportsMade          Report[]              @relation("ReportsMade")
+  notifications        Notification[]        @relation("Notifications")
+  posts           Post[]
+  comments        Comment[]
+  recruitments    Recruitment[]
+  proposals       Proposal[]
+  sentMsgs        Message[]  @relation("SentMessages")
+  membershipsA    ChatRoom[] @relation("UserA")
+  membershipsB    ChatRoom[] @relation("UserB")
+  reviewsWritten  Review[]   @relation("ReviewsWritten")
+  reviewsReceived Review[]   @relation("ReviewsReceived")
+}
+
+// 경력 (인스타 프로필에 표시)
+model Career {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String  // 예: "OO고등학교 농구부 코치"
+  org       String? // 소속
+  startYear Int?
+  endYear   Int?    // null이면 현재
+  detail    String?
+  order     Int     @default(0)
+}
+
+// 커뮤니티 글
+// category: FREE(자유) | QUESTION(질문) | INFO(정보/팁) | TEAMUP(같이운동) | REVIEW(후기)
+model Post {
+  id        String   @id @default(cuid())
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category  String   @default("FREE")
+  sport     String? // 종목 (자유글은 선택)
+  title     String
+  content   String
+  views     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  comments Comment[]
+  likes    PostLike[]
+}
+
+// 게시글 좋아요 (사용자당 1회)
+model PostLike {
+  id     String @id @default(cuid())
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  content   String
+  recommended Boolean @default(false) // 글 작성자가 추천(채택)한 답변
+  parentId  String? // 답글이면 부모 댓글 id
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("CommentReplies")
+  likes     CommentLike[]
+  createdAt DateTime @default(now())
+}
+
+// 댓글/답글 좋아요 (사용자당 1회)
+model CommentLike {
+  id        String  @id @default(cuid())
+  commentId String
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
+}
+
+// 모집공고 (학생/학부모가 올림)
+// serviceType: COUNSELING(상담) | LESSON(레슨)
+// status: OPEN | MATCHED | CLOSED
+model Recruitment {
+  id          String   @id @default(cuid())
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  sport       String
+  serviceType String   @default("LESSON")
+  title       String
+  content     String
+  region      String?
+  budget      String?  // 예: "회당 5만원", "협의"
+  status      String   @default("OPEN")
+  createdAt   DateTime @default(now())
+
+  proposals Proposal[]
+}
+
+// 제안 (코치/감독/레슨선생님이 모집공고에 제안)
+// status: PENDING | ACCEPTED | REJECTED
+model Proposal {
+  id            String      @id @default(cuid())
+  recruitmentId String
+  recruitment   Recruitment @relation(fields: [recruitmentId], references: [id], onDelete: Cascade)
+  proposerId    String
+  proposer      User        @relation(fields: [proposerId], references: [id], onDelete: Cascade)
+  message       String
+  price         String?
+  status        String      @default("PENDING")
+  createdAt     DateTime    @default(now())
+
+  reviews Review[]
+}
+
+// 알림
+// type: COMMENT | REPLY | POST_LIKE | COMMENT_LIKE | PROPOSAL | MATCH | MESSAGE | CONSULT | RECOMMEND
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String // 받는 사람
+  user      User     @relation("Notifications", fields: [userId], references: [id], onDelete: Cascade)
+  actorId   String? // 발생시킨 사람
+  type      String
+  message   String
+  link      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+}
+
+// 신고 — 부적절한 회원/게시물/댓글
+// targetType: USER | POST | COMMENT | RECRUITMENT
+// status: PENDING | RESOLVED | DISMISSED
+model Report {
+  id         String   @id @default(cuid())
+  reporterId String
+  reporter   User     @relation("ReportsMade", fields: [reporterId], references: [id], onDelete: Cascade)
+  targetType String
+  targetId   String
+  reason     String // 신고 사유(카테고리)
+  detail     String? // 상세 설명
+  status     String   @default("PENDING")
+  adminNote  String?
+  createdAt  DateTime @default(now())
+  resolvedAt DateTime?
+}
+
+// 패스키(WebAuthn) 자격증명 — Face ID / 지문 / 기기 PIN 로그인
+model Credential {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  credentialId String   @unique // base64url 인코딩된 credential ID
+  publicKey    Bytes
+  counter      Int      @default(0)
+  transports   String? // JSON 배열 문자열
+  deviceName   String?
+  createdAt    DateTime @default(now())
+}
+
+// 지도자 인증 신청 (코치/감독/레슨선생님 → 관리자 승인 시 user.verified = true)
+// status: PENDING | APPROVED | REJECTED
+model VerificationRequest {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  realName    String? // 실명
+  credential  String // 자격증/경력 등 증빙 설명
+  evidenceUrl String? // 증빙 이미지 URL
+  status      String    @default("PENDING")
+  reviewNote  String? // 관리자 코멘트(거절 사유 등)
+  createdAt   DateTime  @default(now())
+  reviewedAt  DateTime?
+}
+
+// 후기·별점 (매칭 성사 = 제안 ACCEPTED 된 두 당사자끼리만 상호 작성)
+model Review {
+  id         String   @id @default(cuid())
+  proposalId String
+  proposal   Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  authorId   String
+  author     User     @relation("ReviewsWritten", fields: [authorId], references: [id], onDelete: Cascade)
+  targetId   String
+  target     User     @relation("ReviewsReceived", fields: [targetId], references: [id], onDelete: Cascade)
+  rating     Int // 1~5
+  content    String
+  createdAt  DateTime @default(now())
+
+  // 한 매칭당 작성자 1명이 1번만 (상호이므로 두 방향 각각 1개)
+  @@unique([proposalId, authorId])
+}
+
+// 1:1 채팅방
+model ChatRoom {
+  id          String    @id @default(cuid())
+  userAId     String
+  userA       User      @relation("UserA", fields: [userAId], references: [id], onDelete: Cascade)
+  userBId     String
+  userB       User      @relation("UserB", fields: [userBId], references: [id], onDelete: Cascade)
+  lastReadAAt DateTime? // userA가 마지막으로 읽은 시각
+  lastReadBAt DateTime? // userB가 마지막으로 읽은 시각
+  createdAt   DateTime  @default(now())
+  messages    Message[]
+
+  @@unique([userAId, userBId])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  roomId    String
+  room      ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+}
+
+// 홈 화면 스포츠 이슈/뉴스
+model NewsItem {
+  id        String   @id @default(cuid())
+  sport     String
+  title     String
+  summary   String
+  source    String?
+  imageUrl  String?
+  createdAt DateTime @default(now())
+}
