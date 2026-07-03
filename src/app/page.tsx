@@ -76,11 +76,11 @@ export default async function HomePage({
         <p className="mt-2 max-w-lg text-sm text-brand-100">
           자유롭게 소통하고, 내게 맞는 코치·레슨까지 한 번에.
         </p>
-        <div className="mt-5 flex flex-wrap gap-2">
-          <Link href="/board" className="btn bg-white text-brand-700 hover:bg-brand-50">
+        <div className="mt-5 grid grid-cols-2 gap-2 sm:inline-grid sm:auto-cols-max sm:grid-flow-col">
+          <Link href="/board" className="btn w-full bg-white !px-3 text-[13px] text-brand-700 hover:bg-brand-50 sm:text-sm">
             💬 커뮤니티 가기
           </Link>
-          <Link href="/recruit" className="btn bg-white/15 text-white hover:bg-white/25">
+          <Link href="/recruit" className="btn w-full bg-white/15 !px-3 text-[13px] text-white hover:bg-white/25 sm:text-sm">
             모집공고 둘러보기
           </Link>
         </div>

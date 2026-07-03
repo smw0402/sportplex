@@ -139,10 +139,10 @@ export default function NavBar({
               </>
             ) : (
               <>
-                <Link href="/login" className="btn-ghost !py-2 text-sm">
+                <Link href="/login" className="btn-ghost shrink-0 !px-2.5 !py-1.5 text-xs sm:text-sm">
                   로그인
                 </Link>
-                <Link href="/signup" className="btn-primary !py-2 text-sm">
+                <Link href="/signup" className="btn-primary shrink-0 !px-2.5 !py-1.5 text-xs sm:text-sm">
                   회원가입
                 </Link>
               </>

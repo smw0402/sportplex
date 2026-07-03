@@ -64,35 +64,6 @@ export default async function RankingPage({
 
       <SportFilter />
 
-      {/* 상위 3명 시상대 */}
-      {ranked.length >= 3 && (
-        <div className="grid grid-cols-3 gap-3">
-          {[1, 0, 2].map((idx) => {
-            const r = ranked[idx];
-            const heights = ["mt-0", "mt-6", "mt-10"];
-            return (
-              <Link
-                key={r.user.id}
-                href={`/u/${r.user.id}`}
-                className={`card flex flex-col items-center p-4 text-center hover:shadow-md ${heights[idx]}`}
-              >
-                <span className="text-2xl">{RANK_MEDAL[idx]}</span>
-                <div className="my-2">
-                  <Avatar name={r.user.name} src={r.user.avatar} sport={r.user.sport} size={56} />
-                </div>
-                <p className="truncate text-sm font-bold">
-                  {r.user.name}
-                  {r.user.verified && <span className="ml-0.5 text-brand-500">✔</span>}
-                </p>
-                <p className="text-xs text-gray-400">{r.user.sport ?? "종목무관"}</p>
-                <p className="mt-1 text-lg font-extrabold text-brand-600">{r.score}</p>
-                <p className="text-[11px] text-gray-400">점</p>
-              </Link>
-            );
-          })}
-        </div>
-      )}
-
       {/* 전체 순위 */}
       <div className="card divide-y divide-gray-100">
         {ranked.length === 0 && (

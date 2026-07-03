@@ -54,16 +54,16 @@ export default async function BoardPage({
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-xl font-extrabold">💬 커뮤니티</h1>
           <p className="text-sm text-gray-500">선수·지도자가 자유롭게 소통하는 공간이에요.</p>
         </div>
-        <div className="flex shrink-0 gap-2">
-          <Link href="/leaderboard" className="btn-outline">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0">
+          <Link href="/leaderboard" className="btn-outline w-full sm:w-auto">
             🏅 내공랭킹
           </Link>
-          <Link href="/board/new" className="btn-primary">
+          <Link href="/board/new" className="btn-primary w-full sm:w-auto">
             + 글쓰기
           </Link>
         </div>
