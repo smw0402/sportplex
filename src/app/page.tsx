@@ -65,7 +65,7 @@ export default async function HomePage({
   const [hero, ...rest] = news;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       {/* 히어로 배너 */}
       <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 to-brand-800 p-6 text-white sm:p-9">
         <p className="text-sm font-medium text-brand-100">스포츠인들의 커뮤니티 · 코칭 매칭</p>
@@ -89,8 +89,8 @@ export default async function HomePage({
       {/* 종목 필터 */}
       <SportFilter />
 
-      <div className="grid gap-8 lg:grid-cols-3">
-        <div className="space-y-8 lg:col-span-2">
+      <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
+        <div className="space-y-6 md:space-y-8 lg:col-span-2">
           {/* 인기글 */}
           <section>
             <div className="mb-3 flex items-center justify-between">

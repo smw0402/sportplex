@@ -34,11 +34,11 @@ export default function SignupPage() {
       <form action={action} className="card mt-6 space-y-4 p-6">
         <div>
           <label className="label">나는…</label>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {ROLES.map((r) => (
               <label
                 key={r.key}
-                className={`cursor-pointer rounded-xl border px-2 py-2.5 text-center text-sm font-medium transition ${
+                className={`cursor-pointer rounded-xl border px-2 py-2.5 text-center text-sm font-medium leading-tight [word-break:keep-all] transition ${
                   role === r.key
                     ? "border-brand-500 bg-brand-50 text-brand-700"
                     : "border-gray-200 text-gray-600 hover:bg-gray-50"
