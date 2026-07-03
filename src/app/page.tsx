@@ -89,7 +89,7 @@ export default async function HomePage({
       {/* 종목 필터 */}
       <SportFilter />
 
-      <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
         <div className="space-y-6 md:space-y-8 lg:col-span-2">
           {/* 인기글 */}
           <section>
@@ -175,7 +175,7 @@ export default async function HomePage({
                   </article>
                 )}
 
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {rest.map((n) => (
                     <article key={n.id} className="card p-4">
                       <span className="chip bg-gray-50 text-gray-600">

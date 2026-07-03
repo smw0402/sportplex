@@ -172,7 +172,7 @@ export default async function SearchPage({
       {people.length > 0 && (
         <section className="space-y-2">
           <SectionTitle label="⭐ 코치·선생님" more={type === "all" ? qs({ type: "people" }) : undefined} />
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {people.map((u) => (
               <Link key={u.id} href={`/u/${u.id}`} className="card flex items-center gap-3 p-4 hover:shadow-md">
                 <Avatar name={u.name} src={u.avatar} sport={u.sport} size={48} />
@@ -204,7 +204,7 @@ export default async function SearchPage({
       {recruits.length > 0 && (
         <section className="space-y-2">
           <SectionTitle label="📢 모집공고" more={type === "all" ? qs({ type: "recruit" }) : undefined} />
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {recruits.map((r) => (
               <Link key={r.id} href={`/recruit/${r.id}`} className="card p-4 hover:shadow-md">
                 <div className="flex items-center gap-1.5">

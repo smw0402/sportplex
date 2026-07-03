@@ -161,7 +161,7 @@ export default async function AdminPage() {
       {/* 뉴스 관리 (홈 노출) */}
       <section className="card p-6">
         <h2 className="mb-4 font-bold">📰 뉴스 관리</h2>
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <NewsForm />
           <div>
             <p className="mb-2 text-sm font-semibold text-gray-600">최근 등록 {newsList.length}</p>

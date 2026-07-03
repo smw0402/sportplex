@@ -75,7 +75,7 @@ export default async function RecruitPage({
         ))}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {recruits.length === 0 && (
           <div className="card col-span-full p-10 text-center text-sm text-gray-400">
             등록된 모집공고가 없습니다.
