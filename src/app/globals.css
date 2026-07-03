@@ -10,6 +10,8 @@ html {
   /* iOS 가로/세로 전환 시 폰트 크기 자동 확대 방지 */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* 가로 넘침 차단 → 모바일이 화면을 축소(PC처럼 보임) 하지 않게. clip은 sticky를 깨지 않음 */
+  overflow-x: clip;
 }
 
 body {
@@ -20,6 +22,11 @@ body {
   overscroll-behavior-y: contain;
   /* 탭 시 파란 하이라이트 제거 */
   -webkit-tap-highlight-color: transparent;
+  overflow-x: clip;
+  /* 화면보다 커지지 않게 (100vw는 스크롤바 폭 때문에 X → 100%) */
+  max-width: 100%;
+  /* 긴 단어(URL 등)가 가로로 삐져나가지 않게 */
+  overflow-wrap: break-word;
 }
 
 /* 뷰포트 전체 높이(모바일 주소창 대응) */
