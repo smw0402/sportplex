@@ -14,8 +14,11 @@ import {
 import { deleteNewsAction } from "@/app/actions/news";
 import Avatar from "@/components/Avatar";
 import NewsForm from "@/components/NewsForm";
+import AiNewsGenerator from "@/components/AiNewsGenerator";
 
 export const dynamic = "force-dynamic";
+// AI 웹 검색은 시간이 걸릴 수 있어 함수 타임아웃을 늘림
+export const maxDuration = 60;
 
 // 신고 대상으로 이동할 링크
 function targetHref(type: string, id: string) {
@@ -161,6 +164,9 @@ export default async function AdminPage() {
       {/* 뉴스 관리 (홈 노출) */}
       <section className="card p-6">
         <h2 className="mb-4 font-bold">📰 뉴스 관리</h2>
+        <div className="mb-5">
+          <AiNewsGenerator />
+        </div>
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <NewsForm />
           <div>
