@@ -153,7 +153,7 @@ export default async function HomePage({
             ) : (
               <div className="space-y-4">
                 {hero && (
-                  <article className="card overflow-hidden">
+                  <Link href={`/news/${hero.id}`} className="card block overflow-hidden hover:shadow-md">
                     {hero.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={hero.imageUrl} alt={hero.title} className="aspect-[16/7] w-full object-cover" />
@@ -172,12 +172,12 @@ export default async function HomePage({
                         {hero.source ?? "Sportplex"} · {timeAgo(hero.createdAt)}
                       </p>
                     </div>
-                  </article>
+                  </Link>
                 )}
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {rest.map((n) => (
-                    <article key={n.id} className="card p-4">
+                    <Link key={n.id} href={`/news/${n.id}`} className="card block p-4 hover:shadow-md">
                       <span className="chip bg-gray-50 text-gray-600">
                         {sportEmoji(n.sport)} {n.sport}
                       </span>
@@ -186,7 +186,7 @@ export default async function HomePage({
                       <p className="mt-2 text-xs text-gray-400">
                         {n.source ?? "Sportplex"} · {timeAgo(n.createdAt)}
                       </p>
-                    </article>
+                    </Link>
                   ))}
                 </div>
               </div>

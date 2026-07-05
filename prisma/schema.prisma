@@ -256,8 +256,9 @@ model Message {
 model NewsItem {
   id        String   @id @default(cuid())
   sport     String
-  title     String
-  summary   String
+  title     String // 헤드라인
+  summary   String // 목록/미리보기용 한두 줄 요약
+  body      String? // 기사 본문(전체 내용)
   source    String?
   imageUrl  String?
   createdAt DateTime @default(now())

@@ -37,12 +37,20 @@ export default function NewsForm() {
         </div>
       </div>
       <div>
-        <label className="label">제목</label>
-        <input name="title" className="input" placeholder="뉴스 제목" required />
+        <label className="label">헤드라인 (제목)</label>
+        <input name="title" className="input" placeholder="뉴스 헤드라인" required />
       </div>
       <div>
         <label className="label">요약</label>
-        <textarea name="summary" className="input min-h-20" placeholder="한두 문장 요약" required />
+        <textarea name="summary" className="input min-h-16" placeholder="목록/미리보기용 한두 문장 요약" required />
+      </div>
+      <div>
+        <label className="label">기사 본문 (선택)</label>
+        <textarea
+          name="body"
+          className="input min-h-40"
+          placeholder="기사 전체 내용을 입력하세요. (비우면 요약만 표시)"
+        />
       </div>
       <ImageUpload name="imageUrl" variant="cover" label="대표 이미지 (선택)" />
 

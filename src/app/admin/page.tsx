@@ -11,14 +11,10 @@ import {
   removeReportedContentAction,
   setSuspendAction,
 } from "@/app/actions/report";
-import { deleteNewsAction } from "@/app/actions/news";
 import Avatar from "@/components/Avatar";
-import NewsForm from "@/components/NewsForm";
-import AiNewsGenerator from "@/components/AiNewsGenerator";
+import AdminNav from "@/components/AdminNav";
 
 export const dynamic = "force-dynamic";
-// AI 웹 검색은 시간이 걸릴 수 있어 함수 타임아웃을 늘림
-export const maxDuration = 60;
 
 // 신고 대상으로 이동할 링크
 function targetHref(type: string, id: string) {
@@ -32,7 +28,7 @@ export default async function AdminPage() {
   const me = await getCurrentUser();
   if (!me?.isAdmin) notFound(); // 관리자가 아니면 존재하지 않는 페이지로 처리
 
-  const [pending, reviewed, reports, newsList, stats] = await Promise.all([
+  const [pending, reviewed, reports, stats] = await Promise.all([
     prisma.verificationRequest.findMany({
       where: { status: "PENDING" },
       include: { user: true },
@@ -49,7 +45,6 @@ export default async function AdminPage() {
       include: { reporter: true },
       orderBy: { createdAt: "asc" },
     }),
-    prisma.newsItem.findMany({ orderBy: { createdAt: "desc" }, take: 12 }),
     Promise.all([
       prisma.user.count(),
       prisma.user.count({ where: { verified: true } }),
@@ -71,9 +66,24 @@ export default async function AdminPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <h1 className="text-xl font-extrabold">🛠️ 관리자</h1>
-        <span className="chip bg-gray-900 text-white">ADMIN</span>
+      <AdminNav active="dashboard" />
+
+      {/* 빠른 이동 */}
+      <div className="grid grid-cols-2 gap-3">
+        <Link href="/admin/members" className="card flex items-center gap-2 p-4 hover:shadow-md">
+          <span className="text-2xl">👥</span>
+          <div>
+            <p className="font-bold">회원 관리</p>
+            <p className="text-xs text-gray-400">정지·인증·검색</p>
+          </div>
+        </Link>
+        <Link href="/admin/news" className="card flex items-center gap-2 p-4 hover:shadow-md">
+          <span className="text-2xl">📰</span>
+          <div>
+            <p className="font-bold">뉴스 올리기</p>
+            <p className="text-xs text-gray-400">헤드라인·기사 등록</p>
+          </div>
+        </Link>
       </div>
 
       {/* 통계 */}
@@ -158,40 +168,6 @@ export default async function AdminPage() {
               </div>
             );
           })}
-        </div>
-      </section>
-
-      {/* 뉴스 관리 (홈 노출) */}
-      <section className="card p-6">
-        <h2 className="mb-4 font-bold">📰 뉴스 관리</h2>
-        <div className="mb-5">
-          <AiNewsGenerator />
-        </div>
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <NewsForm />
-          <div>
-            <p className="mb-2 text-sm font-semibold text-gray-600">최근 등록 {newsList.length}</p>
-            <div className="space-y-2">
-              {newsList.length === 0 && <p className="text-sm text-gray-400">등록된 뉴스가 없습니다.</p>}
-              {newsList.map((n) => (
-                <div key={n.id} className="flex items-center gap-2 rounded-xl border border-gray-100 p-3">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">
-                      <span className="mr-1">{sportEmoji(n.sport)}</span>
-                      {n.title}
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      {n.sport} · {timeAgo(n.createdAt)}
-                    </p>
-                  </div>
-                  <form action={deleteNewsAction}>
-                    <input type="hidden" name="newsId" value={n.id} />
-                    <button className="text-sm text-red-500 hover:underline">삭제</button>
-                  </form>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 
