@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { updateProfileAction } from "@/app/actions/profile";
 import { SPORTS } from "@/lib/constants";
 import ImageUpload from "@/components/ImageUpload";
+import RegionPicker from "@/components/RegionPicker";
 
 type U = {
   name: string;
@@ -32,23 +33,18 @@ export default function ProfileForm({ user }: { user: U }) {
           <input name="nickname" className="input" defaultValue={user.nickname ?? ""} placeholder="커뮤니티 표시 이름" />
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="label">주 종목</label>
-          <select name="sport" className="input" defaultValue={user.sport ?? ""}>
-            <option value="">선택 안 함</option>
-            {SPORTS.map((s) => (
-              <option key={s.key} value={s.key}>
-                {s.emoji} {s.key}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="label">지역</label>
-          <input name="region" className="input" defaultValue={user.region ?? ""} placeholder="서울 강남구" />
-        </div>
+      <div>
+        <label className="label">주 종목</label>
+        <select name="sport" className="input" defaultValue={user.sport ?? ""}>
+          <option value="">선택 안 함</option>
+          {SPORTS.map((s) => (
+            <option key={s.key} value={s.key}>
+              {s.emoji} {s.key}
+            </option>
+          ))}
+        </select>
       </div>
+      <RegionPicker defaultValue={user.region} />
       <div>
         <label className="label">한 줄 소개</label>
         <textarea name="bio" className="input min-h-24" defaultValue={user.bio ?? ""} placeholder="나를 소개해보세요." />

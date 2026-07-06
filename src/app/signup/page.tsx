@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import Link from "next/link";
 import { signupAction } from "@/app/actions/auth";
 import { ROLES, SPORTS } from "@/lib/constants";
+import RegionPicker from "@/components/RegionPicker";
 
 export default function SignupPage() {
   const [state, action, pending] = useActionState(signupAction, null);
@@ -70,23 +71,18 @@ export default function SignupPage() {
         </div>
         <p className="-mt-2 text-xs text-gray-400">닉네임은 커뮤니티 글·댓글에 표시돼요. (비우면 이름으로 표시)</p>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="label">주 종목</label>
-            <select name="sport" className="input" defaultValue="">
-              <option value="">선택 안 함</option>
-              {SPORTS.map((s) => (
-                <option key={s.key} value={s.key}>
-                  {s.emoji} {s.key}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="label">지역</label>
-            <input name="region" className="input" placeholder="서울 강남구" />
-          </div>
+        <div>
+          <label className="label">주 종목</label>
+          <select name="sport" className="input" defaultValue="">
+            <option value="">선택 안 함</option>
+            {SPORTS.map((s) => (
+              <option key={s.key} value={s.key}>
+                {s.emoji} {s.key}
+              </option>
+            ))}
+          </select>
         </div>
+        <RegionPicker />
 
         <div>
           <label className="label">이메일</label>
