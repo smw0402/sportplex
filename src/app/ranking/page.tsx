@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { roleLabel, sportEmoji } from "@/lib/constants";
+import { roleLabel, sportEmoji, PROVIDER_ROLE_KEYS } from "@/lib/constants";
 import { getRatings } from "@/lib/reviews";
 import { sportplexScore, RANK_MEDAL } from "@/lib/ranking";
 import Avatar from "@/components/Avatar";
@@ -18,7 +18,7 @@ export default async function RankingPage({
 
   const providers = await prisma.user.findMany({
     where: {
-      role: { in: ["COACH", "DIRECTOR", "TEACHER"] },
+      role: { in: PROVIDER_ROLE_KEYS },
       ...(sport ? { sport } : {}),
     },
   });

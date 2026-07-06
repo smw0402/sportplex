@@ -8,6 +8,7 @@ import {
   serviceLabel,
   categoryMeta,
   displayName,
+  PROVIDER_ROLE_KEYS,
 } from "@/lib/constants";
 import { timeAgo } from "@/lib/format";
 import { getRatings } from "@/lib/reviews";
@@ -53,7 +54,7 @@ export default async function HomePage({
     }),
     prisma.user.findMany({
       where: {
-        role: { in: ["COACH", "DIRECTOR", "TEACHER"] },
+        role: { in: PROVIDER_ROLE_KEYS },
         ...(effectiveSport ? { sport: effectiveSport } : {}),
       },
       orderBy: { createdAt: "desc" },

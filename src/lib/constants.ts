@@ -42,9 +42,15 @@ export const ROLES = [
   { key: "COACH", label: "코치", group: "provider" },
   { key: "DIRECTOR", label: "감독", group: "provider" },
   { key: "TEACHER", label: "운동레슨 선생님", group: "provider" },
+  { key: "MENTOR", label: "멘토", group: "provider" },
 ] as const;
 
 export type RoleKey = (typeof ROLES)[number]["key"];
+
+// 서비스 제공(지도자) 역할 키 목록 — DB 조회 등에 사용
+export const PROVIDER_ROLE_KEYS = ROLES.filter((r) => r.group === "provider").map(
+  (r) => r.key
+);
 
 export function roleLabel(role?: string | null) {
   return ROLES.find((r) => r.key === role)?.label ?? "회원";
@@ -55,13 +61,13 @@ export function displayName(u?: { nickname?: string | null; name?: string | null
   return u?.nickname?.trim() || u?.name || "회원";
 }
 
-// 서비스를 "제공"하는 쪽인지 (코치/감독/레슨선생님)
+// 서비스를 "제공"하는 쪽인지 (코치/감독/레슨선생님/멘토)
 export function isProvider(role?: string | null) {
-  return role === "COACH" || role === "DIRECTOR" || role === "TEACHER";
+  return ROLES.some((r) => r.key === role && r.group === "provider");
 }
 // 서비스를 "받는" 쪽인지 (학생/학부모)
 export function isClient(role?: string | null) {
-  return role === "STUDENT" || role === "PARENT";
+  return ROLES.some((r) => r.key === role && r.group === "client");
 }
 
 // 커뮤니티 카테고리

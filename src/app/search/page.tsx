@@ -6,6 +6,7 @@ import {
   serviceLabel,
   RECRUIT_STATUS,
   categoryMeta,
+  PROVIDER_ROLE_KEYS,
 } from "@/lib/constants";
 import { timeAgo } from "@/lib/format";
 import { getRatings } from "@/lib/reviews";
@@ -40,7 +41,7 @@ export default async function SearchPage({
     type === "all" || type === "people"
       ? prisma.user.findMany({
           where: {
-            role: { in: ["COACH", "DIRECTOR", "TEACHER"] },
+            role: { in: PROVIDER_ROLE_KEYS },
             ...sportWhere,
             ...(hasQuery
               ? {
