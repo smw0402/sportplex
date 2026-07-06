@@ -12,7 +12,11 @@ export const metadata: Metadata = {
     "선수·지도자가 소통하는 스포츠 커뮤니티, 코치·레슨 매칭까지 한 번에.",
   applicationName: "Sportplex",
   manifest: "/manifest.webmanifest",
-  icons: { icon: "/icon.svg", shortcut: "/icon.svg", apple: "/apple-icon" },
+  icons: {
+    icon: "/icon-512.png",
+    shortcut: "/icon-192.png",
+    apple: "/apple-touch-icon.png",
+  },
   // iOS 홈 화면 앱(웹앱) 모드
   appleWebApp: {
     capable: true,

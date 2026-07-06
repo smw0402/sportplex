@@ -58,11 +58,9 @@ export default function NavBar({
       {/* 상단 바 */}
       <header className="sticky top-0 z-30 border-b border-gray-100 bg-white/90 pt-safe backdrop-blur">
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-2 px-4">
-          <Link href="/" className="flex items-center gap-1.5 font-extrabold text-lg">
-            <span className="text-brand-600">⚡</span>
-            <span className="tracking-tight">
-              sport<span className="text-brand-600">plex</span>
-            </span>
+          <Link href="/" className="flex shrink-0 items-center" aria-label="Sportplex 홈">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/sportplex_logo.png" alt="Sportplex" className="h-6 w-auto sm:h-7" />
           </Link>
 
           <nav className="ml-4 hidden items-center gap-1 md:flex">
