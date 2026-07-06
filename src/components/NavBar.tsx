@@ -60,7 +60,7 @@ export default function NavBar({
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-2 px-4">
           <Link href="/" className="flex shrink-0 items-center" aria-label="Sportplex 홈">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/sportplex_logo.png" alt="Sportplex" className="h-6 w-auto sm:h-7" />
+            <img src="/sportplex_logo.png" alt="Sportplex" className="h-8 w-auto" />
           </Link>
 
           <nav className="ml-4 hidden items-center gap-1 md:flex">
