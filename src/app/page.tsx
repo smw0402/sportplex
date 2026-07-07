@@ -69,13 +69,13 @@ export default async function HomePage({
     <div className="space-y-6 md:space-y-8">
       {/* 히어로 배너 */}
       <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 to-brand-800 p-6 text-white sm:p-9">
-        <p className="text-sm font-medium text-brand-100">스포츠인들의 커뮤니티 · 코칭 매칭</p>
+        <p className="text-sm font-medium text-brand-100">스포츠인들의 커뮤니티</p>
         <h1 className="mt-1 text-2xl font-extrabold leading-tight sm:text-3xl">
-          선수도, 코치도 모이는 곳
+          학생, 선수, 지도자 모두가 모이는 곳
           <br className="hidden sm:block" /> Sportplex
         </h1>
         <p className="mt-2 max-w-lg text-sm text-brand-100">
-          자유롭게 소통하고, 내게 맞는 코치·레슨까지 한 번에.
+          더 이상 혼자 운동하지 마세요.
         </p>
         <div className="mt-5 grid grid-cols-2 gap-2 sm:inline-grid sm:auto-cols-max sm:grid-flow-col">
           <Link href="/board" className="btn w-full bg-white !px-3 text-[13px] text-brand-700 hover:bg-brand-50 sm:text-sm">
