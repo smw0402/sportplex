@@ -55,6 +55,20 @@ model User {
   paymentsPayer   Payment[]  @relation("PaymentsPayer")
   paymentsPayee   Payment[]  @relation("PaymentsPayee")
   inquiries       Inquiry[]
+  resetTokens     PasswordResetToken[]
+}
+
+// 비밀번호 재설정 토큰 (가입 이메일로 발송)
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
 }
 
 // 경력 (인스타 프로필에 표시)

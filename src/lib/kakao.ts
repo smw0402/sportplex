@@ -11,8 +11,10 @@ export function kakaoAuthUrl(redirectUri: string) {
     client_id: process.env.KAKAO_REST_API_KEY ?? "",
     redirect_uri: redirectUri,
     response_type: "code",
-    scope: "profile_nickname account_email",
   });
+  // scope는 카카오 콘솔의 동의항목 설정을 그대로 사용(명시하면 미활성 항목 요청 시 KOE205 발생).
+  // 특정 scope를 강제하려면 KAKAO_SCOPE 환경변수로 지정(예: "profile_nickname").
+  if (process.env.KAKAO_SCOPE) p.set("scope", process.env.KAKAO_SCOPE);
   return `https://kauth.kakao.com/oauth/authorize?${p.toString()}`;
 }
 
