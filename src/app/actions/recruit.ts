@@ -30,6 +30,25 @@ export async function createRecruitmentAction(_prev: unknown, formData: FormData
   redirect(`/recruit/${r.id}`);
 }
 
+// 모집공고 하트 (사용자당 1회 토글)
+export async function toggleRecruitHeartAction(formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) return;
+  const recruitmentId = String(formData.get("recruitmentId") ?? "");
+  if (!recruitmentId) return;
+
+  const existing = await prisma.recruitmentLike.findUnique({
+    where: { recruitmentId_userId: { recruitmentId, userId: user.id } },
+  });
+  if (existing) {
+    await prisma.recruitmentLike.delete({ where: { id: existing.id } });
+  } else {
+    await prisma.recruitmentLike.create({ data: { recruitmentId, userId: user.id } });
+  }
+  revalidatePath(`/recruit/${recruitmentId}`);
+  revalidatePath("/recruit");
+}
+
 export async function createProposalAction(_prev: unknown, formData: FormData) {
   const user = await getCurrentUser();
   if (!user) return { error: "로그인이 필요합니다." };

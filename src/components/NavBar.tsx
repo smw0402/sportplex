@@ -68,7 +68,7 @@ export default function NavBar({
               <Link
                 key={n.href}
                 href={n.href}
-                className={`relative rounded-lg px-3 py-2 text-sm font-medium transition ${
+                className={`relative whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition ${
                   active(n.href) ? "bg-brand-50 text-brand-700" : "text-gray-600 hover:bg-gray-50"
                 }`}
               >
@@ -156,7 +156,7 @@ export default function NavBar({
             <Link
               key={n.href}
               href={n.href}
-              className={`relative flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[11px] ${
+              className={`relative flex flex-1 flex-col items-center gap-0.5 whitespace-nowrap py-2.5 text-[11px] ${
                 active(n.href) ? "text-brand-600" : "text-gray-500"
               }`}
             >

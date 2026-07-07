@@ -11,14 +11,11 @@ export default function Footer() {
             개인정보 처리방침
           </Link>
           <span className="text-gray-300">|</span>
-          <span>고객센터 {COMPANY.email}</span>
+          <span>문의 {COMPANY.email}</span>
         </div>
 
         <p className="mt-3">
-          {COMPANY.bizName} · 대표 {COMPANY.ceo} · 사업자등록번호 {COMPANY.bizNo} · 통신판매업{" "}
-          {COMPANY.mailOrderNo}
-          <br />
-          {COMPANY.address}
+          {COMPANY.service} · 대표 {COMPANY.ceo} · 문의 {COMPANY.email}
         </p>
 
         <p className="mt-3 text-gray-400">

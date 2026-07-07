@@ -34,6 +34,7 @@ model User {
   credentials          Credential[]
   postLikes            PostLike[]
   commentLikes         CommentLike[]
+  recruitmentLikes     RecruitmentLike[]
   reportsMade          Report[]              @relation("ReportsMade")
   notifications        Notification[]        @relation("Notifications")
   posts           Post[]
@@ -128,9 +129,23 @@ model Recruitment {
   region      String?
   budget      String?  // 예: "회당 5만원", "협의"
   status      String   @default("OPEN")
+  views       Int      @default(0) // 조회수 (중복 카운팅)
   createdAt   DateTime @default(now())
 
   proposals Proposal[]
+  likes     RecruitmentLike[]
+}
+
+// 모집공고 하트 (사용자당 1회)
+model RecruitmentLike {
+  id            String      @id @default(cuid())
+  recruitmentId String
+  recruitment   Recruitment @relation(fields: [recruitmentId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+
+  @@unique([recruitmentId, userId])
 }
 
 // 제안 (코치/감독/레슨선생님이 모집공고에 제안)

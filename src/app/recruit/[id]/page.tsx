@@ -21,6 +21,7 @@ import Avatar from "@/components/Avatar";
 import Stars from "@/components/Stars";
 import ProposeForm from "./ProposeForm";
 import ReviewForm from "@/components/ReviewForm";
+import RecruitHeart from "@/components/RecruitHeart";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,12 @@ export default async function RecruitDetail({
   const { id } = await params;
   const user = await getCurrentUser();
 
+  // 조회수 증가 (중복 카운팅 — 열람할 때마다 +1)
+  await prisma.recruitment.update({
+    where: { id },
+    data: { views: { increment: 1 } },
+  }).catch(() => {});
+
   const r = await prisma.recruitment.findUnique({
     where: { id },
     include: {
@@ -40,9 +47,14 @@ export default async function RecruitDetail({
         include: { proposer: true, reviews: true },
         orderBy: { createdAt: "desc" },
       },
+      _count: { select: { likes: true } },
+      likes: user ? { where: { userId: user.id }, select: { id: true } } : false,
     },
   });
   if (!r) notFound();
+
+  const heartCount = r._count.likes;
+  const iHearted = user ? r.likes.length > 0 : false;
 
   const isAuthor = user?.id === r.author.id;
   const myProposal = user ? r.proposals.find((p) => p.proposerId === user.id) : null;
@@ -102,14 +114,24 @@ export default async function RecruitDetail({
         <div className="mt-4 flex flex-wrap gap-3 rounded-xl bg-gray-50 p-3 text-sm text-gray-600">
           <span>📍 {r.region ?? "지역무관"}</span>
           <span>💰 {r.budget ?? "협의"}</span>
+          <span>👁 조회 {r.views}</span>
+          <span>❤️ 하트 {heartCount}</span>
         </div>
 
-        {isAuthor && r.status === "OPEN" && (
-          <form action={closeRecruitmentAction} className="mt-4">
-            <input type="hidden" name="recruitmentId" value={r.id} />
-            <button className="btn-outline text-sm text-gray-500">공고 마감하기</button>
-          </form>
-        )}
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <RecruitHeart
+            recruitmentId={r.id}
+            count={heartCount}
+            liked={iHearted}
+            canLike={!!user}
+          />
+          {isAuthor && r.status === "OPEN" && (
+            <form action={closeRecruitmentAction}>
+              <input type="hidden" name="recruitmentId" value={r.id} />
+              <button className="btn-outline text-sm text-gray-500">공고 마감하기</button>
+            </form>
+          )}
+        </div>
       </article>
 
       {/* 매칭 성사 후기 (성사된 두 당사자만 상호 작성) */}

@@ -25,7 +25,7 @@ export default async function RecruitPage({
       ...(service ? { serviceType: service } : {}),
     },
     orderBy: [{ status: "asc" }, { createdAt: "desc" }],
-    include: { author: true, _count: { select: { proposals: true } } },
+    include: { author: true, _count: { select: { proposals: true, likes: true } } },
     take: 50,
   });
 
@@ -109,8 +109,10 @@ export default async function RecruitPage({
                   {r.author.name} · {timeAgo(r.createdAt)}
                 </span>
               </div>
-              <span className="text-xs font-semibold text-brand-600">
-                제안 {r._count.proposals}건
+              <span className="flex items-center gap-2 text-xs font-semibold text-gray-500">
+                <span>👁 {r.views}</span>
+                <span className="text-red-500">❤️ {r._count.likes}</span>
+                <span className="text-brand-600">제안 {r._count.proposals}</span>
               </span>
             </div>
           </Link>
