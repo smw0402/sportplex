@@ -8,6 +8,7 @@ import { timeAgo } from "@/lib/format";
 import { setUserSuspendAction, setUserVerifiedAction } from "@/app/actions/admin";
 import Avatar from "@/components/Avatar";
 import AdminNav from "@/components/AdminNav";
+import AdminCreateUser from "@/components/AdminCreateUser";
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +41,8 @@ export default async function AdminMembersPage({
   return (
     <div className="space-y-5">
       <AdminNav active="members" />
+
+      <AdminCreateUser />
 
       <div className="flex items-center justify-between">
         <h2 className="font-bold">👥 회원 {total}명</h2>
