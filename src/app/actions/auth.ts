@@ -17,6 +17,8 @@ export async function signupAction(_prev: unknown, formData: FormData) {
   const role = String(formData.get("role") ?? "STUDENT");
   const sport = String(formData.get("sport") ?? "").trim() || null;
   const region = String(formData.get("region") ?? "").trim() || null;
+  const school = String(formData.get("school") ?? "").trim() || null;
+  const team = String(formData.get("team") ?? "").trim() || null;
 
   // 약관 동의 (체크박스는 체크된 경우에만 전송됨)
   const agreeAge = formData.get("agreeAge") != null;
@@ -45,6 +47,8 @@ export async function signupAction(_prev: unknown, formData: FormData) {
       role,
       sport,
       region,
+      school,
+      team,
       password: await hashPassword(password),
       agreedAt: new Date(), // 필수 동의 이력
       marketingOptIn,

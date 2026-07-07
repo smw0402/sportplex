@@ -9,6 +9,7 @@ import {
   RECRUIT_STATUS,
   serviceLabel,
   categoryMeta,
+  themeGradient,
 } from "@/lib/constants";
 import { timeAgo } from "@/lib/format";
 import { getRating } from "@/lib/reviews";
@@ -56,7 +57,7 @@ export default async function ProfilePage({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={u.cover} alt="cover" className="h-32 w-full object-cover" />
         ) : (
-          <div className="h-28 bg-gradient-to-r from-brand-400 to-brand-700" />
+          <div className="h-28" style={{ backgroundImage: themeGradient(u.themeColor) }} />
         )}
         <div className="px-6 pb-6">
           <div className="-mt-10 flex items-end justify-between">
@@ -95,6 +96,12 @@ export default async function ProfilePage({
               {u.sport && ` · ${sportEmoji(u.sport)} ${u.sport}`}
               {u.region && ` · 📍 ${u.region}`}
             </p>
+            {(u.school || u.team) && (
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                {u.school && <span className="chip bg-gray-100 text-gray-600">🏫 {u.school}</span>}
+                {u.team && <span className="chip bg-gray-100 text-gray-600">🛡️ {u.team}</span>}
+              </div>
+            )}
             {provider && u.verified && (
               <span className="mt-1.5 inline-flex chip bg-brand-50 text-brand-700">
                 ✔ 인증 지도자
@@ -116,6 +123,26 @@ export default async function ProfilePage({
               </div>
             )}
             {u.bio && <p className="mt-2 text-[15px] text-gray-700">{u.bio}</p>}
+
+            {(u.instagram || u.youtube) && (
+              <div className="mt-2.5 flex flex-wrap gap-2">
+                {u.instagram && (
+                  <a
+                    href={`https://instagram.com/${u.instagram}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="chip bg-gradient-to-r from-pink-500 to-purple-500 text-white"
+                  >
+                    📷 @{u.instagram}
+                  </a>
+                )}
+                {u.youtube && (
+                  <a href={u.youtube} target="_blank" rel="noreferrer" className="chip bg-red-500 text-white">
+                    ▶️ YouTube
+                  </a>
+                )}
+              </div>
+            )}
           </div>
 
           {/* 등급(내공 레벨) */}

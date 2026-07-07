@@ -18,9 +18,15 @@ model User {
   role      String   @default("STUDENT")
   sport     String?  // 주 종목
   region    String?  // 활동/거주 지역
+  school    String?  // 소속 학교
+  team      String?  // 소속 팀/클럽
   bio       String?  // 한 줄 소개
   avatar    String?  // 프로필 이미지 URL
   cover     String?  // 커버 이미지 URL
+  themeColor String? // 프로필 테마 색상 키(brand/violet/emerald/rose/amber/slate)
+  instagram String?  // 인스타그램 아이디
+  youtube   String?  // 유튜브 채널 URL
+  kakaoId   String?  @unique // 카카오 로그인 연동 ID
   verified  Boolean  @default(false) // 인증 지도자 뱃지
   isAdmin   Boolean  @default(false) // 관리자 계정
   suspended Boolean  @default(false) // 신고 처리에 따른 이용 정지

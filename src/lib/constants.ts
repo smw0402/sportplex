@@ -149,6 +149,21 @@ export const INQUIRY_STATUS: Record<string, { label: string; color: string }> = 
   CLOSED: { label: "종료", color: "bg-gray-100 text-gray-500" },
 };
 
+// 프로필 커버 테마 색상 (Tailwind purge 회피 위해 hex 인라인 사용)
+export const THEME_COLORS = [
+  { key: "brand", label: "블루", from: "#59a2ff", to: "#1647e1" },
+  { key: "violet", label: "바이올렛", from: "#a78bfa", to: "#6d28d9" },
+  { key: "emerald", label: "에메랄드", from: "#34d399", to: "#047857" },
+  { key: "rose", label: "로즈", from: "#fb7185", to: "#be123c" },
+  { key: "amber", label: "앰버", from: "#fbbf24", to: "#b45309" },
+  { key: "slate", label: "슬레이트", from: "#94a3b8", to: "#334155" },
+] as const;
+
+export function themeGradient(key?: string | null) {
+  const t = THEME_COLORS.find((c) => c.key === key) ?? THEME_COLORS[0];
+  return `linear-gradient(135deg, ${t.from}, ${t.to})`;
+}
+
 export const SCHOOL_CATEGORIES = [
   { key: "MIDDLE", label: "중학교" },
   { key: "HIGH", label: "고등학교" },

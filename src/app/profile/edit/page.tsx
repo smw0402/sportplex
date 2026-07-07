@@ -38,9 +38,14 @@ export default async function ProfileEditPage() {
           nickname: user.nickname,
           sport: user.sport,
           region: user.region,
+          school: user.school,
+          team: user.team,
           bio: user.bio,
           avatar: user.avatar,
           cover: user.cover,
+          themeColor: user.themeColor,
+          instagram: user.instagram,
+          youtube: user.youtube,
         }}
       />
 

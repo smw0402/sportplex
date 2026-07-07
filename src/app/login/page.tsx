@@ -1,15 +1,24 @@
 "use client";
 
-import { useActionState, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useActionState, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { startAuthentication } from "@simplewebauthn/browser";
 import { loginAction } from "@/app/actions/auth";
+import KakaoButton from "@/components/KakaoButton";
 
-export default function LoginPage() {
+const ERROR_MESSAGES: Record<string, string> = {
+  kakao: "카카오 로그인에 실패했어요. 다시 시도해주세요.",
+  kakao_config: "카카오 로그인이 아직 설정되지 않았어요. (관리자 환경변수 필요)",
+  suspended: "이용이 정지된 계정입니다. 고객센터로 문의해주세요.",
+};
+
+function LoginInner() {
   const [state, action, pending] = useActionState(loginAction, null);
   const [email, setEmail] = useState("");
   const router = useRouter();
+  const params = useSearchParams();
+  const urlError = params.get("error");
   const [pkBusy, setPkBusy] = useState(false);
   const [pkError, setPkError] = useState<string | null>(null);
 
@@ -50,11 +59,22 @@ export default function LoginPage() {
       <h1 className="text-2xl font-extrabold">로그인</h1>
       <p className="mt-1 text-sm text-gray-500">Sportplex에 다시 오신 걸 환영해요.</p>
 
+      {urlError && (
+        <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
+          {ERROR_MESSAGES[urlError] ?? "로그인 중 문제가 발생했어요."}
+        </p>
+      )}
+
+      {/* 카카오 로그인 */}
+      <div className="mt-6">
+        <KakaoButton label="카카오로 3초 만에 시작하기" />
+      </div>
+
       {/* 패스키(Face ID / 지문 / 기기 PIN) 로그인 */}
       <button
         onClick={loginWithPasskey}
         disabled={pkBusy}
-        className="btn-outline mt-6 w-full !py-3 text-base"
+        className="btn-outline mt-3 w-full !py-3 text-base"
       >
         {pkBusy ? "인증 중..." : "🔐 Face ID · 지문으로 로그인"}
       </button>
@@ -109,5 +129,13 @@ export default function LoginPage() {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="mx-auto max-w-md py-10 text-center text-sm text-gray-400">불러오는 중…</div>}>
+      <LoginInner />
+    </Suspense>
   );
 }

@@ -16,14 +16,19 @@ export async function updateProfileAction(_prev: unknown, formData: FormData) {
   const nickname = String(formData.get("nickname") ?? "").trim() || null;
   const sport = String(formData.get("sport") ?? "").trim() || null;
   const region = String(formData.get("region") ?? "").trim() || null;
+  const school = String(formData.get("school") ?? "").trim() || null;
+  const team = String(formData.get("team") ?? "").trim() || null;
   const bio = String(formData.get("bio") ?? "").trim() || null;
   const avatar = String(formData.get("avatar") ?? "").trim() || null;
   const cover = String(formData.get("cover") ?? "").trim() || null;
+  const themeColor = String(formData.get("themeColor") ?? "").trim() || null;
+  const instagram = String(formData.get("instagram") ?? "").trim().replace(/^@/, "") || null;
+  const youtube = String(formData.get("youtube") ?? "").trim() || null;
   if (!name) return { error: "이름을 입력해주세요." };
 
   await prisma.user.update({
     where: { id: user.id },
-    data: { name, nickname, sport, region, bio, avatar, cover },
+    data: { name, nickname, sport, region, school, team, bio, avatar, cover, themeColor, instagram, youtube },
   });
   redirect(`/u/${user.id}`);
 }

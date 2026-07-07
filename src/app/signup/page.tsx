@@ -5,6 +5,7 @@ import Link from "next/link";
 import { signupAction } from "@/app/actions/auth";
 import { ROLES, SPORTS } from "@/lib/constants";
 import RegionPicker from "@/components/RegionPicker";
+import KakaoButton from "@/components/KakaoButton";
 
 export default function SignupPage() {
   const [state, action, pending] = useActionState(signupAction, null);
@@ -32,7 +33,19 @@ export default function SignupPage() {
         Sportplex에서 코치·감독·레슨선생님과 학생·학부모를 연결하세요.
       </p>
 
-      <form action={action} className="card mt-6 space-y-4 p-6">
+      {/* 카카오 간편 가입 */}
+      <div className="mt-6">
+        <KakaoButton label="카카오로 3초 만에 시작하기" />
+        <p className="mt-2 text-center text-xs text-gray-400">
+          카카오로 시작하면 이용약관·개인정보 처리방침에 동의한 것으로 간주됩니다.
+        </p>
+      </div>
+
+      <div className="my-5 flex items-center gap-3 text-xs text-gray-400">
+        <span className="h-px flex-1 bg-gray-200" /> 또는 이메일로 가입 <span className="h-px flex-1 bg-gray-200" />
+      </div>
+
+      <form action={action} className="card space-y-4 p-6">
         <div>
           <label className="label">나는…</label>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -81,6 +94,16 @@ export default function SignupPage() {
               </option>
             ))}
           </select>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="label">소속 학교</label>
+            <input name="school" className="input" placeholder="예: 한국체육대학교" />
+          </div>
+          <div>
+            <label className="label">소속 팀·클럽</label>
+            <input name="team" className="input" placeholder="예: 서울FC 유소년" />
+          </div>
         </div>
         <RegionPicker />
 
