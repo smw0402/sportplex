@@ -67,6 +67,9 @@ export default async function RootLayout({
 
   return (
     <html lang="ko">
+      <head>
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="" />
+      </head>
       <body>
         <NavBar user={sessionUser} unread={unread} chatUnread={chat.total} />
         <main className="mx-auto max-w-5xl px-4 pt-5 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-10">

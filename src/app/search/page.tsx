@@ -175,7 +175,7 @@ export default async function SearchPage({
           <SectionTitle label="⭐ 코치·선생님" more={type === "all" ? qs({ type: "people" }) : undefined} />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {people.map((u) => (
-              <Link key={u.id} href={`/u/${u.id}`} className="card flex items-center gap-3 p-4 hover:shadow-md">
+              <Link key={u.id} href={`/u/${u.id}`} className="card-link flex items-center gap-3 p-4 ">
                 <Avatar name={u.name} src={u.avatar} sport={u.sport} size={48} />
                 <div className="min-w-0">
                   <p className="truncate font-semibold">
@@ -207,7 +207,7 @@ export default async function SearchPage({
           <SectionTitle label="📢 모집공고" more={type === "all" ? qs({ type: "recruit" }) : undefined} />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {recruits.map((r) => (
-              <Link key={r.id} href={`/recruit/${r.id}`} className="card p-4 hover:shadow-md">
+              <Link key={r.id} href={`/recruit/${r.id}`} className="card-link p-4 ">
                 <div className="flex items-center gap-1.5">
                   <span className={`chip ${RECRUIT_STATUS[r.status].color}`}>
                     {RECRUIT_STATUS[r.status].label}

@@ -82,7 +82,7 @@ export default async function RecruitPage({
           </div>
         )}
         {recruits.map((r) => (
-          <Link key={r.id} href={`/recruit/${r.id}`} className="card p-5 hover:shadow-md">
+          <Link key={r.id} href={`/recruit/${r.id}`} className="card-link p-5 ">
             <div className="flex items-center gap-1.5">
               <span className={`chip ${RECRUIT_STATUS[r.status].color}`}>
                 {RECRUIT_STATUS[r.status].label}

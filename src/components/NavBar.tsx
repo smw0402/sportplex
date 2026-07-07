@@ -156,10 +156,13 @@ export default function NavBar({
             <Link
               key={n.href}
               href={n.href}
-              className={`relative flex flex-1 flex-col items-center gap-0.5 whitespace-nowrap py-2.5 text-[11px] ${
+              className={`relative flex flex-1 flex-col items-center gap-0.5 whitespace-nowrap py-2.5 text-[11px] font-medium transition-colors ${
                 active(n.href) ? "text-brand-600" : "text-gray-500"
               }`}
             >
+              {active(n.href) && (
+                <span className="absolute inset-x-6 top-0 h-0.5 rounded-full bg-brand-600" />
+              )}
               <span className="relative text-lg leading-none">
                 {n.icon}
                 {badgeFor(n.href) > 0 && (

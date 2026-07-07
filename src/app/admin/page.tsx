@@ -70,14 +70,14 @@ export default async function AdminPage() {
 
       {/* 빠른 이동 */}
       <div className="grid grid-cols-2 gap-3">
-        <Link href="/admin/members" className="card flex items-center gap-2 p-4 hover:shadow-md">
+        <Link href="/admin/members" className="card-link flex items-center gap-2 p-4 ">
           <span className="text-2xl">👥</span>
           <div>
             <p className="font-bold">회원 관리</p>
             <p className="text-xs text-gray-400">정지·인증·검색</p>
           </div>
         </Link>
-        <Link href="/admin/news" className="card flex items-center gap-2 p-4 hover:shadow-md">
+        <Link href="/admin/news" className="card-link flex items-center gap-2 p-4 ">
           <span className="text-2xl">📰</span>
           <div>
             <p className="font-bold">뉴스 올리기</p>
