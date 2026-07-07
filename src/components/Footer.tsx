@@ -10,6 +10,7 @@ export default function Footer() {
           <Link href="/privacy" className="font-semibold text-gray-700 hover:text-brand-600">
             개인정보 처리방침
           </Link>
+          <Link href="/support" className="hover:text-brand-600">1:1 문의</Link>
           <span className="text-gray-300">|</span>
           <span>문의 {COMPANY.email}</span>
         </div>

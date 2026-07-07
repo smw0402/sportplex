@@ -22,7 +22,7 @@ export default async function ChatRoomPage({
     include: {
       userA: true,
       userB: true,
-      messages: { orderBy: { createdAt: "asc" } },
+      messages: { orderBy: { createdAt: "asc" }, include: { payment: true } },
     },
   });
   if (!room) notFound();
@@ -65,7 +65,18 @@ export default async function ChatRoomPage({
           id: m.id,
           senderId: m.senderId,
           content: m.content,
+          kind: m.kind,
           createdAt: m.createdAt.toISOString(),
+          payment: m.payment
+            ? {
+                id: m.payment.id,
+                amount: m.payment.amount,
+                status: m.payment.status,
+                payerId: m.payment.payerId,
+                payeeId: m.payment.payeeId,
+                memo: m.payment.memo,
+              }
+            : null,
         }))}
       />
     </div>

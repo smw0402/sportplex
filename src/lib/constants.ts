@@ -123,3 +123,39 @@ export const PROPOSAL_STATUS: Record<string, { label: string; color: string }> =
   ACCEPTED: { label: "수락됨", color: "bg-green-100 text-green-700" },
   REJECTED: { label: "거절됨", color: "bg-red-100 text-red-600" },
 };
+
+export const PAYMENT_STATUS: Record<string, { label: string; color: string }> = {
+  REQUESTED: { label: "결제 요청", color: "bg-yellow-100 text-yellow-700" },
+  PAID: { label: "결제 완료", color: "bg-green-100 text-green-700" },
+  CANCELED: { label: "취소됨", color: "bg-gray-100 text-gray-500" },
+  REFUNDED: { label: "환불됨", color: "bg-red-100 text-red-600" },
+};
+
+export const INQUIRY_CATEGORIES = [
+  { key: "GENERAL", label: "일반 문의" },
+  { key: "PAYMENT", label: "결제·환불" },
+  { key: "REPORT", label: "신고·제재" },
+  { key: "PARTNER", label: "제휴·광고" },
+  { key: "ETC", label: "기타" },
+] as const;
+
+export function inquiryCategoryLabel(k?: string | null) {
+  return INQUIRY_CATEGORIES.find((c) => c.key === k)?.label ?? k ?? "일반 문의";
+}
+
+export const INQUIRY_STATUS: Record<string, { label: string; color: string }> = {
+  OPEN: { label: "미답변", color: "bg-yellow-100 text-yellow-700" },
+  ANSWERED: { label: "답변완료", color: "bg-green-100 text-green-700" },
+  CLOSED: { label: "종료", color: "bg-gray-100 text-gray-500" },
+};
+
+export const SCHOOL_CATEGORIES = [
+  { key: "MIDDLE", label: "중학교" },
+  { key: "HIGH", label: "고등학교" },
+  { key: "UNIV", label: "대학교" },
+  { key: "CLUB", label: "클럽·기타" },
+] as const;
+
+export function schoolCategoryLabel(k?: string | null) {
+  return SCHOOL_CATEGORIES.find((c) => c.key === k)?.label ?? k ?? "";
+}

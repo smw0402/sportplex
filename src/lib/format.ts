@@ -1,3 +1,14 @@
+// 원화 표기: 50000 → "50,000원"
+export function won(amount: number) {
+  return `${amount.toLocaleString("ko-KR")}원`;
+}
+
+// 날짜 YYYY.MM.DD
+export function ymd(date: Date | string) {
+  const d = typeof date === "string" ? new Date(date) : date;
+  return d.toLocaleDateString("ko-KR", { year: "numeric", month: "2-digit", day: "2-digit" });
+}
+
 export function timeAgo(date: Date | string) {
   const d = typeof date === "string" ? new Date(date) : date;
   const sec = Math.floor((Date.now() - d.getTime()) / 1000);

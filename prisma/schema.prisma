@@ -46,6 +46,9 @@ model User {
   membershipsB    ChatRoom[] @relation("UserB")
   reviewsWritten  Review[]   @relation("ReviewsWritten")
   reviewsReceived Review[]   @relation("ReviewsReceived")
+  paymentsPayer   Payment[]  @relation("PaymentsPayer")
+  paymentsPayee   Payment[]  @relation("PaymentsPayee")
+  inquiries       Inquiry[]
 }
 
 // 경력 (인스타 프로필에 표시)
@@ -253,6 +256,7 @@ model ChatRoom {
   lastReadBAt DateTime? // userB가 마지막으로 읽은 시각
   createdAt   DateTime  @default(now())
   messages    Message[]
+  payments    Payment[]
 
   @@unique([userAId, userBId])
 }
@@ -264,7 +268,93 @@ model Message {
   senderId  String
   sender    User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
   content   String
+  kind      String   @default("TEXT") // TEXT | PAYMENT
+  paymentId String?  @unique
+  payment   Payment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
+}
+
+// 채팅 내 결제 (안전결제) — status: REQUESTED | PAID | CANCELED | REFUNDED
+model Payment {
+  id        String    @id @default(cuid())
+  roomId    String?
+  room      ChatRoom? @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  payerId   String // 결제하는 사람(학생/학부모)
+  payer     User      @relation("PaymentsPayer", fields: [payerId], references: [id], onDelete: Cascade)
+  payeeId   String // 정산 받는 사람(코치/선생님)
+  payee     User      @relation("PaymentsPayee", fields: [payeeId], references: [id], onDelete: Cascade)
+  amount    Int
+  memo      String?
+  status    String    @default("REQUESTED")
+  method    String? // 결제 수단(데모: "가상결제")
+  createdAt DateTime  @default(now())
+  paidAt    DateTime?
+  message   Message?
+
+  @@index([status, createdAt])
+}
+
+// 1:1 문의 — status: OPEN | ANSWERED | CLOSED
+model Inquiry {
+  id        String    @id @default(cuid())
+  userId    String?
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name      String
+  email     String
+  category  String    @default("GENERAL") // GENERAL | PAYMENT | REPORT | PARTNER | ETC
+  subject   String
+  message   String
+  status    String    @default("OPEN")
+  reply     String?
+  repliedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([status, createdAt])
+}
+
+// 학교 DB (체육 특기자·입시 상담용) — category: MIDDLE | HIGH | UNIV | CLUB
+model School {
+  id        String   @id @default(cuid())
+  name      String
+  category  String   @default("HIGH")
+  region    String?
+  sports    String? // 쉼표로 구분된 종목 목록
+  homepage  String?
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([name])
+}
+
+// 접속·유입 로그 (통계용)
+model AccessLog {
+  id        String   @id @default(cuid())
+  path      String
+  referrer  String?
+  userId    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// 오류/버그 로그
+model ErrorLog {
+  id        String   @id @default(cuid())
+  message   String
+  stack     String?
+  path      String?
+  userId    String?
+  digest    String?
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([resolved, createdAt])
+}
+
+// 사이트 설정(홈 레이아웃 등) 단순 key-value
+model Setting {
+  key   String @id
+  value String
 }
 
 // 홈 화면 스포츠 이슈/뉴스

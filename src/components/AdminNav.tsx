@@ -2,8 +2,14 @@ import Link from "next/link";
 
 const TABS = [
   { href: "/admin", label: "📊 대시보드", key: "dashboard" },
-  { href: "/admin/members", label: "👥 회원 관리", key: "members" },
-  { href: "/admin/news", label: "📰 뉴스 관리", key: "news" },
+  { href: "/admin/stats", label: "📈 통계", key: "stats" },
+  { href: "/admin/members", label: "👥 고객 관리", key: "members" },
+  { href: "/admin/payments", label: "💳 결제 관리", key: "payments" },
+  { href: "/admin/inquiries", label: "📨 1:1 문의", key: "inquiries" },
+  { href: "/admin/news", label: "📰 콘텐츠", key: "news" },
+  { href: "/admin/schools", label: "🏫 학교 DB", key: "schools" },
+  { href: "/admin/layout", label: "🧩 레이아웃", key: "layout" },
+  { href: "/admin/logs", label: "🐞 오류 로그", key: "logs" },
 ];
 
 export default function AdminNav({ active }: { active: string }) {

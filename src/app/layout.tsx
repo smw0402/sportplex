@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import AccessLogger from "@/components/AccessLogger";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getChatUnread } from "@/lib/chatUnread";
@@ -71,6 +72,7 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="" />
       </head>
       <body>
+        <AccessLogger />
         <NavBar user={sessionUser} unread={unread} chatUnread={chat.total} />
         <main className="mx-auto max-w-5xl px-4 pt-5 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-10">
           {children}
