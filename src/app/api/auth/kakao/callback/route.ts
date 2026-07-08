@@ -58,7 +58,12 @@ export async function GET(req: Request) {
 
     await createSession(user.id, true);
     return NextResponse.redirect(new URL("/", req.url));
-  } catch {
+  } catch (e) {
+    // 실패 원인을 관리자 오류 로그에 상세 기록 (카카오 응답 본문 포함)
+    const message = e instanceof Error ? e.message : "kakao login failed";
+    await prisma.errorLog
+      .create({ data: { message: `[KAKAO] ${message}`, path: "/api/auth/kakao/callback" } })
+      .catch(() => {});
     return NextResponse.redirect(new URL("/login?error=kakao", req.url));
   }
 }

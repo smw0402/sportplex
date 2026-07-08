@@ -32,7 +32,10 @@ export async function kakaoExchange(code: string, redirectUri: string) {
     headers: { "Content-Type": "application/x-www-form-urlencoded;charset=utf-8" },
     body,
   });
-  if (!res.ok) throw new Error("kakao token exchange failed");
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(`kakao token exchange failed (${res.status}): ${detail}`);
+  }
   return (await res.json()) as { access_token: string };
 }
 
@@ -48,6 +51,9 @@ export async function kakaoProfile(accessToken: string): Promise<KakaoProfile> {
   const res = await fetch("https://kapi.kakao.com/v2/user/me", {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
-  if (!res.ok) throw new Error("kakao profile fetch failed");
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(`kakao profile fetch failed (${res.status}): ${detail}`);
+  }
   return (await res.json()) as KakaoProfile;
 }
