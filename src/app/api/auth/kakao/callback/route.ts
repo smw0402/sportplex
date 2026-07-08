@@ -13,7 +13,9 @@ export async function GET(req: Request) {
   }
 
   try {
-    const redirectUri = new URL("/api/auth/kakao/callback", req.url).toString();
+    // 토큰 교환 시 redirect_uri는 authorize 때와 동일해야 함(고정값 우선)
+    const redirectUri =
+      process.env.KAKAO_REDIRECT_URI ?? new URL("/api/auth/kakao/callback", req.url).toString();
     const { access_token } = await kakaoExchange(code, redirectUri);
     const profile = await kakaoProfile(access_token);
 
