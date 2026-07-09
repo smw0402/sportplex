@@ -12,7 +12,9 @@ export default function DeleteAccount({ isSocial }: { isSocial: boolean }) {
 
       <div className="mt-4 space-y-3">
         <p className="rounded-lg bg-red-50 px-3 py-2.5 text-sm text-red-600">
-          탈퇴하면 프로필·게시글·댓글·채팅·결제 내역 등 <b>모든 데이터가 영구 삭제</b>되며 복구할 수 없어요.
+          탈퇴하면 계정이 비활성화되고 다른 사람에게 보이지 않게 돼요. 데이터는 <b>30일간 보관</b>되며,
+          이 기간 안에 <b>다시 로그인하면 자동 복구</b>됩니다. 30일이 지나면 프로필·게시글·댓글·채팅 등이
+          <b> 완전히 삭제</b>돼요.
         </p>
 
         <form

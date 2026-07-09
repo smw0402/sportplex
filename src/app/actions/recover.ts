@@ -27,7 +27,7 @@ export async function findEmailAction(_prev: unknown, formData: FormData) {
   if (!name) return { error: "이름을 입력해주세요." };
 
   const users = await prisma.user.findMany({
-    where: { name },
+    where: { name, deletedAt: null },
     select: { email: true, createdAt: true },
     orderBy: { createdAt: "asc" },
     take: 5,

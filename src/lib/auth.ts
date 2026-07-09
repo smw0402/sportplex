@@ -53,7 +53,8 @@ export async function getCurrentUser() {
   const userId = verify(token);
   if (!userId) return null;
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  // 정지된 계정은 비로그인으로 처리
+  // 정지·탈퇴한 계정은 비로그인으로 처리
   if (user?.suspended) return null;
+  if (user?.deletedAt) return null;
   return user;
 }

@@ -44,6 +44,8 @@ export default async function ProfilePage({
     },
   });
   if (!u) notFound();
+  // 탈퇴한 회원은 관리자 외에는 볼 수 없음
+  if (u.deletedAt && !me?.isAdmin) notFound();
 
   const isMe = me?.id === u.id;
   const provider = isProvider(u.role);

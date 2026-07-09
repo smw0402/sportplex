@@ -42,6 +42,7 @@ export default async function SearchPage({
       ? prisma.user.findMany({
           where: {
             role: { in: PROVIDER_ROLE_KEYS },
+            deletedAt: null,
             ...sportWhere,
             ...(hasQuery
               ? {

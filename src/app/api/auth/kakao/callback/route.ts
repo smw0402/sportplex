@@ -55,6 +55,10 @@ export async function GET(req: Request) {
     if (user.suspended) {
       return NextResponse.redirect(new URL("/login?error=suspended", req.url));
     }
+    // 탈퇴한 계정이면 재로그인으로 복구
+    if (user.deletedAt) {
+      await prisma.user.update({ where: { id: user.id }, data: { deletedAt: null } });
+    }
 
     await createSession(user.id, true);
     return NextResponse.redirect(new URL("/", req.url));

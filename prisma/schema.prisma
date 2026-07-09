@@ -33,6 +33,8 @@ model User {
   points    Int      @default(0) // 커뮤니티 활동 포인트(추천 등)
   agreedAt      DateTime? // 이용약관·개인정보 필수 동의 시각(동의 이력)
   marketingOptIn Boolean  @default(false) // 마케팅 정보 수신(선택) 동의
+  deletedAt     DateTime? // 회원 탈퇴(소프트 삭제) 시각 — 30일 후 완전 삭제, 그 전 재로그인 시 복구
+  isBot         Boolean  @default(false) // 데모·마케팅용 자동 활동 계정 표시
   createdAt DateTime @default(now())
 
   careers              Career[]

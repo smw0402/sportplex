@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function LeaderboardPage() {
   const users = await prisma.user.findMany({
-    where: { isAdmin: false },
+    where: { isAdmin: false, deletedAt: null },
     orderBy: [{ points: "desc" }, { createdAt: "asc" }],
     take: 50,
   });

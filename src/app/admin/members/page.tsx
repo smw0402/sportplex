@@ -75,6 +75,7 @@ export default async function AdminMembersPage({
                     {u.verified && <span className="text-brand-500">✔</span>}
                     {u.isAdmin && <span className="chip bg-gray-900 text-white">ADMIN</span>}
                     {u.suspended && <span className="chip bg-red-100 text-red-600">정지</span>}
+                    {u.deletedAt && <span className="chip bg-gray-200 text-gray-500">탈퇴</span>}
                   </p>
                   <p className="truncate text-xs text-gray-400">
                     {u.email} · {roleLabel(u.role)} · {lv.icon} Lv.{lv.level} · 가입 {timeAgo(u.createdAt)}

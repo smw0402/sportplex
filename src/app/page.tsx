@@ -56,6 +56,7 @@ export default async function HomePage({
     prisma.user.findMany({
       where: {
         role: { in: PROVIDER_ROLE_KEYS },
+        deletedAt: null,
         ...(effectiveSport ? { sport: effectiveSport } : {}),
       },
       orderBy: { createdAt: "desc" },

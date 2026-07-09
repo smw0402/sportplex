@@ -72,6 +72,12 @@ export async function loginAction(_prev: unknown, formData: FormData) {
   if (user.suspended) {
     return { error: "이용이 정지된 계정입니다. 고객센터로 문의해주세요." };
   }
+  // 탈퇴한 계정: 30일 내면 재로그인으로 복구, 이후면 차단
+  if (user.deletedAt) {
+    const days = (Date.now() - user.deletedAt.getTime()) / 86_400_000;
+    if (days > 30) return { error: "탈퇴 처리된 계정입니다. 새로 가입해주세요." };
+    await prisma.user.update({ where: { id: user.id }, data: { deletedAt: null } });
+  }
   await createSession(user.id, remember);
   redirect("/");
 }
@@ -107,7 +113,8 @@ export async function deleteAccountAction(_prev: unknown, formData: FormData) {
     }
   }
 
-  await prisma.user.delete({ where: { id: user.id } });
+  // 소프트 삭제: 즉시 로그아웃·비공개 처리, 30일간 보관 후 완전 삭제(그 전 재로그인 시 복구)
+  await prisma.user.update({ where: { id: user.id }, data: { deletedAt: new Date() } });
   await destroySession();
   redirect("/?left=1");
 }

@@ -19,6 +19,7 @@ export default async function RankingPage({
   const providers = await prisma.user.findMany({
     where: {
       role: { in: PROVIDER_ROLE_KEYS },
+      deletedAt: null,
       ...(sport ? { sport } : {}),
     },
   });
