@@ -124,7 +124,7 @@ export default function NavBar({
                   href={isClient(user.role) ? "/recruit/new" : "/board/new"}
                   className="hidden btn-primary !px-3 !py-2 text-xs sm:inline-flex"
                 >
-                  {isClient(user.role) ? "+ 레슨 요청" : "+ 질문 작성"}
+                  {isClient(user.role) ? "+ 문의하기" : "+ 질문 작성"}
                 </Link>
                 {/* 프로필: 상단 아바타 클릭 */}
                 <Link href={`/u/${user.id}`} className="ml-0.5 flex items-center gap-2" aria-label="내 프로필">
