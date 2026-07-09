@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { addCareerAction, deleteCareerAction } from "@/app/actions/profile";
 import ProfileForm from "./ProfileForm";
 import PasskeyManager from "@/components/PasskeyManager";
+import DeleteAccount from "@/components/DeleteAccount";
 
 export const dynamic = "force-dynamic";
 
@@ -96,6 +97,9 @@ export default async function ProfileEditPage() {
           <button className="btn-primary w-full">경력 추가</button>
         </form>
       </section>
+
+      {/* 회원 탈퇴 */}
+      <DeleteAccount isSocial={!!user.kakaoId && user.email.endsWith("@kakao.local")} />
     </div>
   );
 }

@@ -7,6 +7,7 @@ import {
   checkPassword,
   createSession,
   destroySession,
+  getCurrentUser,
 } from "@/lib/auth";
 
 export async function signupAction(_prev: unknown, formData: FormData) {
@@ -78,4 +79,35 @@ export async function loginAction(_prev: unknown, formData: FormData) {
 export async function logoutAction() {
   await destroySession();
   redirect("/");
+}
+
+// 회원 탈퇴 — 관련 데이터(글·댓글·채팅 등)는 Prisma cascade로 함께 삭제됨
+export async function deleteAccountAction(_prev: unknown, formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) return { error: "로그인이 필요합니다." };
+
+  const isSocial = !!user.kakaoId && user.email.endsWith("@kakao.local");
+  const password = String(formData.get("password") ?? "");
+  const confirm = String(formData.get("confirm") ?? "").trim();
+
+  if (isSocial) {
+    // 카카오 등 소셜 전용 계정은 비밀번호가 없으므로 확인 문구로 검증
+    if (confirm !== "탈퇴") return { error: '확인란에 "탈퇴"를 정확히 입력해주세요.' };
+  } else {
+    if (!password || !(await checkPassword(password, user.password))) {
+      return { error: "비밀번호가 올바르지 않습니다." };
+    }
+  }
+
+  // 마지막 관리자 계정은 실수로 삭제되지 않도록 보호
+  if (user.isAdmin) {
+    const adminCount = await prisma.user.count({ where: { isAdmin: true } });
+    if (adminCount <= 1) {
+      return { error: "마지막 관리자 계정은 탈퇴할 수 없습니다. 다른 관리자를 먼저 지정하세요." };
+    }
+  }
+
+  await prisma.user.delete({ where: { id: user.id } });
+  await destroySession();
+  redirect("/?left=1");
 }
