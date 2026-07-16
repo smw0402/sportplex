@@ -1,42 +1,14 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 import { createPostAction } from "@/app/actions/board";
-import { SPORTS, POST_CATEGORIES } from "@/lib/constants";
+import { SPORTS } from "@/lib/constants";
 
-export default function PostForm({
-  defaultSport,
-  defaultCategory = "FREE",
-}: {
-  defaultSport?: string;
-  defaultCategory?: string;
-}) {
+export default function PostForm({ defaultSport }: { defaultSport?: string }) {
   const [state, action, pending] = useActionState(createPostAction, null);
-  const [category, setCategory] = useState(defaultCategory);
 
   return (
     <form action={action} className="card space-y-4 p-6">
-      <div>
-        <label className="label">카테고리</label>
-        <input type="hidden" name="category" value={category} />
-        <div className="flex flex-wrap gap-2">
-          {POST_CATEGORIES.map((c) => (
-            <button
-              type="button"
-              key={c.key}
-              onClick={() => setCategory(c.key)}
-              className={`chip border ${
-                category === c.key
-                  ? "border-brand-500 bg-brand-50 text-brand-700"
-                  : "border-gray-200 bg-white text-gray-600"
-              }`}
-            >
-              {c.emoji} {c.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
       <div>
         <label className="label">종목 (선택)</label>
         <select name="sport" className="input" defaultValue={defaultSport ?? ""}>

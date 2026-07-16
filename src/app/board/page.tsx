@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { sportEmoji, categoryMeta, displayName } from "@/lib/constants";
+import { sportEmoji, displayName } from "@/lib/constants";
 import { timeAgo } from "@/lib/format";
 import SportFilter from "@/components/SportFilter";
-import CategoryTabs from "@/components/CategoryTabs";
 import Avatar from "@/components/Avatar";
 import LevelBadge from "@/components/LevelBadge";
 
@@ -18,13 +17,21 @@ const SORTS = [
 export default async function BoardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ sport?: string; category?: string; sort?: string }>;
+  searchParams: Promise<{ sport?: string; sort?: string; q?: string }>;
 }) {
-  const { sport, category, sort = "new" } = await searchParams;
+  const { sport, sort = "new", q = "" } = await searchParams;
+  const keyword = q.trim();
 
   const where = {
     ...(sport ? { sport } : {}),
-    ...(category ? { category } : {}),
+    ...(keyword
+      ? {
+          OR: [
+            { title: { contains: keyword, mode: "insensitive" as const } },
+            { content: { contains: keyword, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
   };
 
   const orderBy =
@@ -47,7 +54,7 @@ export default async function BoardPage({
   const qs = (next: { sort?: string }) => {
     const p = new URLSearchParams();
     if (sport) p.set("sport", sport);
-    if (category) p.set("category", category);
+    if (keyword) p.set("q", keyword);
     p.set("sort", next.sort ?? sort);
     return `/board?${p.toString()}`;
   };
@@ -69,11 +76,26 @@ export default async function BoardPage({
         </div>
       </div>
 
-      <CategoryTabs />
+      {/* 커뮤니티 검색 */}
+      <form action="/board" className="flex gap-2">
+        {sport && <input type="hidden" name="sport" value={sport} />}
+        {sort !== "new" && <input type="hidden" name="sort" value={sort} />}
+        <div className="relative flex-1">
+          <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+          <input
+            name="q"
+            defaultValue={keyword}
+            className="input !pl-10"
+            placeholder="커뮤니티 글 검색 (제목·내용)"
+          />
+        </div>
+        <button className="btn-primary shrink-0">검색</button>
+      </form>
+
       <SportFilter />
 
       {/* 정렬 */}
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
         {SORTS.map((s) => (
           <Link
             key={s.key}
@@ -85,23 +107,32 @@ export default async function BoardPage({
             {s.label}
           </Link>
         ))}
+        {keyword && (
+          <Link href="/board" className="ml-auto text-xs text-gray-400 hover:text-gray-600">
+            검색 초기화 ✕
+          </Link>
+        )}
       </div>
+
+      {keyword && (
+        <p className="text-sm text-gray-500">
+          <b className="text-gray-800">&ldquo;{keyword}&rdquo;</b> 검색 결과 {posts.length}건
+        </p>
+      )}
 
       <div className="card divide-y divide-gray-100">
         {posts.length === 0 && (
-          <div className="p-10 text-center text-sm text-gray-400">첫 글을 남겨보세요!</div>
+          <div className="p-10 text-center text-sm text-gray-400">
+            {keyword ? "검색 결과가 없어요. 다른 키워드로 시도해보세요." : "첫 글을 남겨보세요!"}
+          </div>
         )}
         {posts.map((p) => {
-          const cat = categoryMeta(p.category);
           const hot = p._count.likes >= 3;
           return (
             <Link key={p.id} href={`/board/${p.id}`} className="flex gap-3 p-4 hover:bg-gray-50">
               <Avatar name={displayName(p.author)} src={p.author.avatar} sport={p.author.sport} size={42} />
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-1.5 text-xs text-gray-400">
-                  <span className="chip bg-brand-50 text-brand-700">
-                    {cat.emoji} {cat.label}
-                  </span>
                   {p.sport && (
                     <span className="chip bg-gray-50 text-gray-600">
                       {sportEmoji(p.sport)} {p.sport}

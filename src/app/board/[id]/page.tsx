@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { sportEmoji, roleLabel, categoryMeta, displayName } from "@/lib/constants";
+import { sportEmoji, roleLabel, displayName } from "@/lib/constants";
 import { timeAgo } from "@/lib/format";
 import { addCommentAction, deletePostAction } from "@/app/actions/board";
 import Avatar from "@/components/Avatar";
@@ -51,7 +51,6 @@ export default async function PostDetail({
 
   await prisma.post.update({ where: { id }, data: { views: { increment: 1 } } });
 
-  const cat = categoryMeta(post.category);
   const isOwner = user?.id === post.author.id;
   const postLiked = Array.isArray(post.likes) && post.likes.length > 0;
 
@@ -102,16 +101,13 @@ export default async function PostDetail({
       </Link>
 
       <article className="card p-6">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="chip bg-brand-50 text-brand-700">
-            {cat.emoji} {cat.label}
-          </span>
-          {post.sport && (
+        {post.sport && (
+          <div className="flex flex-wrap items-center gap-1.5">
             <span className="chip bg-gray-50 text-gray-600">
               {sportEmoji(post.sport)} {post.sport}
             </span>
-          )}
-        </div>
+          </div>
+        )}
         <h1 className="mt-2 text-xl font-bold">{post.title}</h1>
 
         <div className="mt-3 flex items-center justify-between">

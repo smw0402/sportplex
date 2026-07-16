@@ -15,14 +15,24 @@ export const dynamic = "force-dynamic";
 export default async function RecruitPage({
   searchParams,
 }: {
-  searchParams: Promise<{ sport?: string; service?: string }>;
+  searchParams: Promise<{ sport?: string; service?: string; q?: string }>;
 }) {
-  const { sport, service } = await searchParams;
+  const { sport, service, q = "" } = await searchParams;
+  const keyword = q.trim();
 
   const recruits = await prisma.recruitment.findMany({
     where: {
       ...(sport ? { sport } : {}),
       ...(service ? { serviceType: service } : {}),
+      ...(keyword
+        ? {
+            OR: [
+              { title: { contains: keyword, mode: "insensitive" as const } },
+              { content: { contains: keyword, mode: "insensitive" as const } },
+              { region: { contains: keyword, mode: "insensitive" as const } },
+            ],
+          }
+        : {}),
     },
     orderBy: [{ status: "asc" }, { createdAt: "desc" }],
     include: { author: true, _count: { select: { proposals: true, likes: true } } },
@@ -59,6 +69,31 @@ export default async function RecruitPage({
         </div>
         <span className="text-lg">→</span>
       </Link>
+
+      {/* 모집공고 검색 */}
+      <form action="/recruit" className="flex gap-2">
+        {sport && <input type="hidden" name="sport" value={sport} />}
+        {service && <input type="hidden" name="service" value={service} />}
+        <div className="relative flex-1">
+          <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+          <input
+            name="q"
+            defaultValue={keyword}
+            className="input !pl-10"
+            placeholder="모집공고 검색 (제목·내용·지역)"
+          />
+        </div>
+        <button className="btn-primary shrink-0">검색</button>
+      </form>
+
+      {keyword && (
+        <p className="flex items-center gap-2 text-sm text-gray-500">
+          <span>
+            <b className="text-gray-800">&ldquo;{keyword}&rdquo;</b> 검색 결과 {recruits.length}건
+          </span>
+          <Link href="/recruit" className="text-xs text-gray-400 hover:text-gray-600">초기화 ✕</Link>
+        </p>
+      )}
 
       <SportFilter />
 

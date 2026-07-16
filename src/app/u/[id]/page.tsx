@@ -8,7 +8,6 @@ import {
   isProvider,
   RECRUIT_STATUS,
   serviceLabel,
-  categoryMeta,
   themeGradient,
 } from "@/lib/constants";
 import { timeAgo } from "@/lib/format";
@@ -284,9 +283,11 @@ export default async function ProfilePage({
                 href={`/board/${p.id}`}
                 className="flex items-center gap-2 rounded-xl border border-gray-100 p-3 hover:bg-gray-50"
               >
-                <span className="chip bg-brand-50 text-brand-700">
-                  {categoryMeta(p.category).emoji} {categoryMeta(p.category).label}
-                </span>
+                {p.sport && (
+                  <span className="chip bg-gray-50 text-gray-600 shrink-0">
+                    {sportEmoji(p.sport)} {p.sport}
+                  </span>
+                )}
                 <span className="min-w-0 flex-1 truncate text-sm font-medium">{p.title}</span>
                 <span className="text-xs text-gray-400">{timeAgo(p.createdAt)}</span>
               </Link>

@@ -5,7 +5,6 @@ import {
   roleLabel,
   serviceLabel,
   RECRUIT_STATUS,
-  categoryMeta,
   PROVIDER_ROLE_KEYS,
 } from "@/lib/constants";
 import { timeAgo } from "@/lib/format";
@@ -239,15 +238,12 @@ export default async function SearchPage({
                 <Avatar name={p.author.name} src={p.author.avatar} sport={p.author.sport} size={38} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                    <span className="chip bg-brand-50 text-brand-700">
-                      {categoryMeta(p.category).emoji} {categoryMeta(p.category).label}
-                    </span>
                     {p.sport && (
                       <span className="chip bg-gray-50 text-gray-600">
                         {sportEmoji(p.sport)} {p.sport}
                       </span>
                     )}
-                    <span>· {p.author.name} · {timeAgo(p.createdAt)}</span>
+                    <span>{p.author.name} · {timeAgo(p.createdAt)}</span>
                   </div>
                   <p className="mt-1 truncate font-semibold">{p.title}</p>
                   <p className="mt-0.5 line-clamp-1 text-sm text-gray-500">{p.content}</p>

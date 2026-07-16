@@ -4,10 +4,9 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { POST_CATEGORIES, displayName } from "@/lib/constants";
+import { displayName } from "@/lib/constants";
 import { notify } from "@/lib/notify";
 
-const CATEGORY_KEYS = POST_CATEGORIES.map((c) => c.key);
 const RECOMMEND_POINTS = 10;
 const POST_POINTS = 2; // 글 작성
 const COMMENT_POINTS = 1; // 댓글 작성
@@ -28,16 +27,14 @@ export async function createPostAction(_prev: unknown, formData: FormData) {
   const user = await getCurrentUser();
   if (!user) return { error: "로그인이 필요합니다." };
 
-  const category = String(formData.get("category") ?? "FREE");
   const sport = String(formData.get("sport") ?? "").trim() || null;
   const title = String(formData.get("title") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
 
-  if (!CATEGORY_KEYS.includes(category as never)) return { error: "카테고리를 선택해주세요." };
   if (!title || !content) return { error: "제목과 내용을 입력해주세요." };
 
   const post = await prisma.post.create({
-    data: { category, sport, title, content, authorId: user.id },
+    data: { sport, title, content, authorId: user.id },
   });
   await addPoints(user.id, POST_POINTS); // 글 작성 내공
   redirect(`/board/${post.id}`);
