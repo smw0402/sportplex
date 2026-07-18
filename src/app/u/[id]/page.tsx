@@ -17,6 +17,8 @@ import { startChatAction } from "@/app/actions/profile";
 import Avatar from "@/components/Avatar";
 import Stars from "@/components/Stars";
 import ReportButton from "@/components/ReportButton";
+import BookmarkButton from "@/components/BookmarkButton";
+import ShareButton from "@/components/ShareButton";
 import { levelOf } from "@/lib/level";
 
 export const dynamic = "force-dynamic";
@@ -49,6 +51,23 @@ export default async function ProfilePage({
   const isMe = me?.id === u.id;
   const provider = isProvider(u.role);
   const rating = await getRating(u.id);
+  const bookmarked = me
+    ? !!(await prisma.bookmark.findUnique({
+        where: { userId_targetType_targetId: { userId: me.id, targetType: "USER", targetId: u.id } },
+      }))
+    : false;
+
+  // 프로필 완성도 체크리스트 (본인에게만 노출)
+  const checklist = [
+    { key: "avatar", label: "프로필 사진", done: !!u.avatar },
+    { key: "bio", label: "한 줄 소개", done: !!u.bio },
+    { key: "sport", label: "주 종목", done: !!u.sport },
+    { key: "region", label: "활동 지역", done: !!u.region },
+    { key: "schoolteam", label: "소속 학교·팀", done: !!(u.school || u.team) },
+    { key: "career", label: "경력 1개 이상", done: u.careers.length > 0 },
+    ...(provider ? [{ key: "verified", label: "지도자 인증", done: u.verified }] : []),
+  ];
+  const pct = Math.round((checklist.filter((c) => c.done).length / checklist.length) * 100);
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
@@ -68,6 +87,8 @@ export default async function ProfilePage({
             <div className="flex gap-2">
               {isMe ? (
                 <>
+                  <ShareButton variant="icon" path={`/u/${u.id}`} title={`${u.name} · Sportplex`} />
+                  <Link href="/saved" className="btn-outline text-sm">🔖 찜 목록</Link>
                   <Link href="/profile/edit" className="btn-outline text-sm">
                     프로필 편집
                   </Link>
@@ -78,6 +99,14 @@ export default async function ProfilePage({
               ) : (
                 <div className="flex items-center gap-2">
                   {me && <ReportButton targetType="USER" targetId={u.id} className="btn-ghost text-sm" />}
+                  <ShareButton variant="icon" path={`/u/${u.id}`} title={`${u.name} · Sportplex`} />
+                  <BookmarkButton
+                    variant="icon"
+                    targetType="USER"
+                    targetId={u.id}
+                    saved={bookmarked}
+                    canSave={!!me}
+                  />
                   <form action={startChatAction}>
                     <input type="hidden" name="targetId" value={u.id} />
                     <button className="btn-primary text-sm">💌 메시지 보내기</button>
@@ -179,6 +208,36 @@ export default async function ProfilePage({
           </div>
         </div>
       </div>
+
+      {/* 프로필 완성도 (본인, 미완성 시) */}
+      {isMe && pct < 100 && (
+        <section className="card p-6">
+          <div className="flex items-center justify-between">
+            <h2 className="font-bold">✨ 프로필 완성도</h2>
+            <span className="text-sm font-bold text-brand-600">{pct}%</span>
+          </div>
+          <p className="mt-0.5 text-xs text-gray-400">완성할수록 매칭·노출에 유리해요.</p>
+          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-gray-100">
+            <div className="h-full rounded-full bg-brand-500 transition-all" style={{ width: `${pct}%` }} />
+          </div>
+          <ul className="mt-3 space-y-1.5 text-sm">
+            {checklist.map((c) => (
+              <li key={c.key} className={`flex items-center gap-2 ${c.done ? "text-gray-400" : "text-gray-700"}`}>
+                <span>{c.done ? "✅" : "⬜"}</span>
+                {c.label}
+                {!c.done && (
+                  <Link
+                    href={c.key === "verified" ? "/verify" : "/profile/edit"}
+                    className="ml-auto text-xs font-medium text-brand-600"
+                  >
+                    {c.key === "verified" ? "인증 신청" : "채우기"} →
+                  </Link>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {/* 경력 */}
       {(u.careers.length > 0 || isMe) && (

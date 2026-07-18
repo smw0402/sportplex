@@ -56,7 +56,7 @@ export async function signupAction(_prev: unknown, formData: FormData) {
     },
   });
   await createSession(user.id);
-  redirect(`/u/${user.id}`);
+  redirect("/onboarding");
 }
 
 export async function loginAction(_prev: unknown, formData: FormData) {
@@ -84,6 +84,21 @@ export async function loginAction(_prev: unknown, formData: FormData) {
 
 export async function logoutAction() {
   await destroySession();
+  redirect("/");
+}
+
+// 가입 직후 온보딩 — 역할·종목·지역 관심사 저장
+export async function saveOnboardingAction(_prev: unknown, formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) return { error: "로그인이 필요합니다." };
+  const role = String(formData.get("role") ?? user.role);
+  const sport = String(formData.get("sport") ?? "").trim() || null;
+  const region = String(formData.get("region") ?? "").trim() || null;
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { role, sport, region },
+  });
   redirect("/");
 }
 

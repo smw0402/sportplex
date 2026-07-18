@@ -22,6 +22,8 @@ import Stars from "@/components/Stars";
 import ProposeForm from "./ProposeForm";
 import ReviewForm from "@/components/ReviewForm";
 import RecruitHeart from "@/components/RecruitHeart";
+import BookmarkButton from "@/components/BookmarkButton";
+import ShareButton from "@/components/ShareButton";
 
 export const dynamic = "force-dynamic";
 
@@ -55,6 +57,11 @@ export default async function RecruitDetail({
 
   const heartCount = r._count.likes;
   const iHearted = user ? r.likes.length > 0 : false;
+  const bookmarked = user
+    ? !!(await prisma.bookmark.findUnique({
+        where: { userId_targetType_targetId: { userId: user.id, targetType: "RECRUITMENT", targetId: r.id } },
+      }))
+    : false;
 
   const isAuthor = user?.id === r.author.id;
   const myProposal = user ? r.proposals.find((p) => p.proposerId === user.id) : null;
@@ -125,6 +132,8 @@ export default async function RecruitDetail({
             liked={iHearted}
             canLike={!!user}
           />
+          <BookmarkButton targetType="RECRUITMENT" targetId={r.id} saved={bookmarked} canSave={!!user} />
+          <ShareButton path={`/recruit/${r.id}`} title={`${r.title} · Sportplex 모집공고`} text={r.content.slice(0, 60)} />
           {isAuthor && r.status === "OPEN" && (
             <form action={closeRecruitmentAction}>
               <input type="hidden" name="recruitmentId" value={r.id} />

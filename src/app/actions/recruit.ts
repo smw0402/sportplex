@@ -7,6 +7,15 @@ import { getCurrentUser } from "@/lib/auth";
 import { getOrCreateRoom } from "@/lib/chat";
 import { isClient, displayName } from "@/lib/constants";
 import { notify } from "@/lib/notify";
+import { sendUserEmail, emailLayout } from "@/lib/email";
+import { headers } from "next/headers";
+
+async function siteOrigin() {
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "sportplex-phi.vercel.app";
+  const proto = h.get("x-forwarded-proto") ?? "https";
+  return `${proto}://${host}`;
+}
 
 export async function createRecruitmentAction(_prev: unknown, formData: FormData) {
   const user = await getCurrentUser();
@@ -73,6 +82,16 @@ export async function createProposalAction(_prev: unknown, formData: FormData) {
     message: `${displayName(user)}님이 "${recruit.title}" 공고에 제안을 보냈어요.`,
     link: `/recruit/${recruitmentId}`,
   });
+  await sendUserEmail(
+    recruit.authorId,
+    `[Sportplex] "${recruit.title}" 공고에 새 제안이 도착했어요`,
+    emailLayout(
+      "새 제안이 도착했어요 📩",
+      `${displayName(user)}님이 회원님의 모집공고 <b>"${recruit.title}"</b>에 제안을 보냈습니다. 지금 확인하고 상담을 시작해보세요.`,
+      "제안 확인하기",
+      `${await siteOrigin()}/recruit/${recruitmentId}`
+    )
+  );
   revalidatePath(`/recruit/${recruitmentId}`);
   return { ok: true };
 }
@@ -105,6 +124,16 @@ export async function acceptProposalAction(formData: FormData) {
     message: `${displayName(user)}님이 제안을 수락했어요! 채팅으로 상담을 시작하세요. 🤝`,
     link: `/chat/${room.id}`,
   });
+  await sendUserEmail(
+    proposal.proposerId,
+    "[Sportplex] 제안이 수락되어 매칭되었어요 🤝",
+    emailLayout(
+      "매칭 성사! 🤝",
+      `${displayName(user)}님이 회원님의 제안을 수락했어요. 이제 채팅으로 상담을 시작할 수 있습니다.`,
+      "채팅으로 이동",
+      `${await siteOrigin()}/chat/${room.id}`
+    )
+  );
   redirect(`/chat/${room.id}`);
 }
 

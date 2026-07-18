@@ -8,6 +8,38 @@ export function emailConfigured() {
   return !!process.env.RESEND_API_KEY;
 }
 
+// 간단한 이벤트 메일 레이아웃
+export function emailLayout(title: string, body: string, ctaText?: string, ctaLink?: string) {
+  return `
+    <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">
+      <h2 style="color:#1b5cf5;margin:0 0 12px">Sportplex</h2>
+      <h3 style="margin:0 0 8px">${title}</h3>
+      <p style="color:#444;line-height:1.6">${body}</p>
+      ${
+        ctaText && ctaLink
+          ? `<p style="margin:24px 0"><a href="${ctaLink}" style="background:#1b5cf5;color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:bold">${ctaText}</a></p>`
+          : ""
+      }
+      <p style="color:#aaa;font-size:12px;margin-top:24px">알림 수신을 원치 않으시면 프로필 설정에서 변경하세요.</p>
+    </div>`;
+}
+
+// 회원 이메일로 이벤트 알림 발송 (설정·유효 이메일일 때만). 실패는 조용히 무시.
+export async function sendUserEmail(userId: string, subject: string, html: string) {
+  if (!process.env.RESEND_API_KEY) return;
+  try {
+    const { prisma } = await import("@/lib/prisma");
+    const u = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { email: true, deletedAt: true },
+    });
+    if (!u || !u.email || u.email.endsWith("@kakao.local") || u.deletedAt) return;
+    await sendEmail({ to: u.email, subject, html });
+  } catch {
+    /* 무시 */
+  }
+}
+
 export async function sendEmail({
   to,
   subject,

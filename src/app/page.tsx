@@ -10,7 +10,7 @@ import {
   PROVIDER_ROLE_KEYS,
 } from "@/lib/constants";
 import { timeAgo } from "@/lib/format";
-import { getRatings } from "@/lib/reviews";
+import { getRatings, getPendingReviews } from "@/lib/reviews";
 import { getHomeLayout } from "@/lib/homeLayout";
 import Avatar from "@/components/Avatar";
 import Stars from "@/components/Stars";
@@ -65,6 +65,7 @@ export default async function HomePage({
   ]);
 
   const ratings = await getRatings(coaches.map((c) => c.id));
+  const pendingReviews = user ? await getPendingReviews(user.id) : [];
   const [hero, ...rest] = news;
 
   // 블록 렌더러 — 관리자 레이아웃 설정 순서/표시여부대로 노출
@@ -253,6 +254,22 @@ export default async function HomePage({
           </Link>
         </div>
       </section>
+
+      {/* 후기 작성 리마인드 */}
+      {pendingReviews.length > 0 && (
+        <Link
+          href={`/recruit/${pendingReviews[0].recruitmentId}`}
+          className="flex items-center justify-between rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 hover:bg-amber-100"
+        >
+          <div>
+            <p className="text-sm font-bold text-amber-800">✍️ 작성할 후기 {pendingReviews.length}건</p>
+            <p className="text-xs text-amber-600">
+              {pendingReviews[0].targetName}님과의 매칭 후기를 남겨주세요.
+            </p>
+          </div>
+          <span className="text-lg text-amber-700">→</span>
+        </Link>
+      )}
 
       {/* 종목 필터 */}
       <SportFilter />

@@ -25,6 +25,30 @@ export async function getRating(userId: string): Promise<Rating> {
   return (await getRatings([userId])).get(userId) ?? { avg: 0, count: 0 };
 }
 
+// 아직 후기를 남기지 않은 성사 매칭 목록 (후기 리마인드용)
+export async function getPendingReviews(userId: string) {
+  const proposals = await prisma.proposal.findMany({
+    where: {
+      status: "ACCEPTED",
+      OR: [{ proposerId: userId }, { recruitment: { authorId: userId } }],
+    },
+    include: {
+      recruitment: { select: { id: true, title: true, authorId: true, author: { select: { name: true } } } },
+      proposer: { select: { name: true } },
+      reviews: { where: { authorId: userId }, select: { id: true } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return proposals
+    .filter((p) => p.reviews.length === 0)
+    .map((p) => ({
+      recruitmentId: p.recruitment.id,
+      title: p.recruitment.title,
+      targetName: userId === p.recruitment.authorId ? p.proposer.name : p.recruitment.author.name,
+    }));
+}
+
 // 매칭(ACCEPTED 제안)에서 viewer가 상대방에게 후기를 쓸 수 있는지 판단.
 // 성사된 제안의 두 당사자(공고 작성자 ↔ 제안자)끼리만 상호 작성 가능.
 export function reviewTargetFor(

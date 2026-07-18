@@ -8,6 +8,8 @@ import { addCommentAction, deletePostAction } from "@/app/actions/board";
 import Avatar from "@/components/Avatar";
 import LikeButton from "@/components/LikeButton";
 import ReportButton from "@/components/ReportButton";
+import BookmarkButton from "@/components/BookmarkButton";
+import ShareButton from "@/components/ShareButton";
 import LevelBadge from "@/components/LevelBadge";
 import CommentItem, { type CommentNode } from "@/components/CommentItem";
 
@@ -53,6 +55,11 @@ export default async function PostDetail({
 
   const isOwner = user?.id === post.author.id;
   const postLiked = Array.isArray(post.likes) && post.likes.length > 0;
+  const bookmarked = user
+    ? !!(await prisma.bookmark.findUnique({
+        where: { userId_targetType_targetId: { userId: user.id, targetType: "POST", targetId: post.id } },
+      }))
+    : false;
 
   // 댓글 → 노드 평탄화 (부모 다음에 답글)
   type C = (typeof post.comments)[number];
@@ -140,8 +147,10 @@ export default async function PostDetail({
           {post.content}
         </p>
 
-        <div className="mt-5 flex justify-center">
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
           <LikeButton postId={post.id} count={post._count.likes} liked={postLiked} canLike={!!user} />
+          <BookmarkButton targetType="POST" targetId={post.id} saved={bookmarked} canSave={!!user} />
+          <ShareButton path={`/board/${post.id}`} title={`${post.title} · Sportplex`} text={post.content.slice(0, 60)} />
         </div>
       </article>
 

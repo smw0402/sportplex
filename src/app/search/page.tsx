@@ -27,11 +27,20 @@ const TABS: { key: Tab; label: string }[] = [
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; sport?: string; type?: Tab }>;
+  searchParams: Promise<{
+    q?: string;
+    sport?: string;
+    type?: Tab;
+    region?: string;
+    verified?: string;
+    psort?: string;
+  }>;
 }) {
-  const { q = "", sport, type = "all" } = await searchParams;
+  const { q = "", sport, type = "all", region = "", verified = "", psort = "new" } = await searchParams;
   const keyword = q.trim();
   const hasQuery = keyword.length > 0;
+  const regionKeyword = region.trim();
+  const verifiedOnly = verified === "1";
 
   // q + sport 조건으로 각 엔티티 검색
   const sportWhere = sport ? { sport } : {};
@@ -43,6 +52,8 @@ export default async function SearchPage({
             role: { in: PROVIDER_ROLE_KEYS },
             deletedAt: null,
             ...sportWhere,
+            ...(verifiedOnly ? { verified: true } : {}),
+            ...(regionKeyword ? { region: { contains: regionKeyword, mode: "insensitive" as const } } : {}),
             ...(hasQuery
               ? {
                   OR: [
@@ -55,7 +66,7 @@ export default async function SearchPage({
               : {}),
           },
           orderBy: [{ verified: "desc" }, { createdAt: "desc" }],
-          take: type === "people" ? 50 : 6,
+          take: type === "people" ? 80 : 6,
         })
       : Promise.resolve([]),
 
@@ -100,35 +111,62 @@ export default async function SearchPage({
   ]);
 
   const ratings = await getRatings(people.map((p) => p.id));
+  // 평점순 정렬 (people)
+  if (psort === "rating") {
+    people.sort((a, b) => (ratings.get(b.id)?.avg ?? 0) - (ratings.get(a.id)?.avg ?? 0));
+  }
   const total = people.length + recruits.length + posts.length;
   const qs = (next: Partial<{ type: Tab }>) => {
     const sp = new URLSearchParams();
     if (keyword) sp.set("q", keyword);
     if (sport) sp.set("sport", sport);
+    if (regionKeyword) sp.set("region", regionKeyword);
+    if (verifiedOnly) sp.set("verified", "1");
+    if (psort !== "new") sp.set("psort", psort);
     const t = next.type ?? type;
     if (t !== "all") sp.set("type", t);
     return `/search?${sp.toString()}`;
   };
+  const showPeopleFilters = type === "all" || type === "people";
 
   return (
     <div className="space-y-5">
-      {/* 검색 입력 */}
-      <form action="/search" className="flex gap-2">
+      {/* 검색 입력 + 필터 */}
+      <form action="/search" className="space-y-2">
         {sport && <input type="hidden" name="sport" value={sport} />}
         {type !== "all" && <input type="hidden" name="type" value={type} />}
-        <div className="relative flex-1">
-          <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
-            🔍
-          </span>
-          <input
-            name="q"
-            defaultValue={keyword}
-            className="input !pl-10"
-            placeholder="코치, 종목, 지역, 모집공고, 질문 검색…"
-            autoFocus
-          />
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+            <input
+              name="q"
+              defaultValue={keyword}
+              className="input !pl-10"
+              placeholder="코치, 종목, 지역, 모집공고, 질문 검색…"
+              autoFocus
+            />
+          </div>
+          <button className="btn-primary shrink-0">검색</button>
         </div>
-        <button className="btn-primary shrink-0">검색</button>
+
+        {showPeopleFilters && (
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              name="region"
+              defaultValue={regionKeyword}
+              className="input !w-36 !py-2 text-sm"
+              placeholder="지역 (예: 서울)"
+            />
+            <select name="psort" defaultValue={psort} className="input !w-28 !py-2 text-sm">
+              <option value="new">최신순</option>
+              <option value="rating">평점순</option>
+            </select>
+            <label className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-600">
+              <input type="checkbox" name="verified" value="1" defaultChecked={verifiedOnly} className="h-4 w-4 rounded border-gray-300" />
+              인증 코치만
+            </label>
+          </div>
+        )}
       </form>
 
       {/* 종목 필터 */}

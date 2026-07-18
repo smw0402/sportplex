@@ -37,7 +37,9 @@ export async function GET(req: Request) {
     }
 
     // 3) 그래도 없으면 신규 가입
+    let isNew = false;
     if (!user) {
+      isNew = true;
       const finalEmail = email ?? `kakao_${kakaoId}@kakao.local`;
       user = await prisma.user.create({
         data: {
@@ -61,7 +63,8 @@ export async function GET(req: Request) {
     }
 
     await createSession(user.id, true);
-    return NextResponse.redirect(new URL("/", req.url));
+    // 신규 가입자는 온보딩으로
+    return NextResponse.redirect(new URL(isNew ? "/onboarding" : "/", req.url));
   } catch (e) {
     // 실패 원인을 관리자 오류 로그에 상세 기록 (카카오 응답 본문 포함)
     const message = e instanceof Error ? e.message : "kakao login failed";
